@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSDI Agent Call Script & Rebuttal Hub</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #475569;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --green: #16a34a;
+      --green-soft: #dcfce7;
+      --red: #dc2626;
+      --red-soft: #fee2e2;
+      --amber: #b45309;
+      --amber-bg: #fef3c7;
+      --amber-border: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    header {
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .badge {
+      background: #1e293b;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-sm {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 150px;
+    }
+
+    .input-sm::placeholder { color: #94a3b8; }
+
+    .btn-reset {
+      background: #334155;
+      color: #fff;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-reset:hover { background: #475569; }
+
+    /* Main Split Workspace */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #334155;
+    }
+
+    .panel-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+      scroll-behavior: smooth;
+    }
+
+    /* Tabs on Left Panel */
+    .tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Script Cards */
+    .script-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      transition: all 0.15s ease;
+    }
+
+    .script-card.status-q {
+      border-left: 5px solid var(--green);
+      background: #f0fdf4;
+    }
+
+    .script-card.status-nq {
+      border-left: 5px solid var(--red);
+      background: #fef2f2;
+    }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .step-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--primary);
+      letter-spacing: 0.4px;
+    }
+
+    .spoken-text {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .highlight-var {
+      background: #e0e7ff;
+      color: #1e3a8a;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .agent-note {
+      margin-top: 10px;
+      background: var(--amber-bg);
+      border-left: 3px solid var(--amber-border);
+      color: var(--amber);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .q-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #cbd5e1;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .q-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-q, .btn-nq {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .btn-q {
+      background: var(--green-soft);
+      color: var(--green);
+      border-color: #86efac;
+    }
+    .btn-q.selected, .btn-q:hover {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn-nq {
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: #fca5a5;
+    }
+    .btn-nq.selected, .btn-nq:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .closure-box {
+      background: #eff6ff;
+      border: 2px solid #93c5fd;
+    }
+
+    .outro-box {
+      background: #fff1f2;
+      border: 2px solid #fda4af;
+    }
+
+    /* Right Panel: Objection Buttons */
+    .search-box {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+
+    .category-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.6px;
+      margin: 12px 0 8px;
+    }
+
+    .objection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .obj-btn {
+      text-align: left;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .obj-btn:hover {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .obj-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .obj-btn-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .obj-btn-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .obj-btn.active .obj-btn-sub {
+      color: #dbeafe;
+    }
+
+    /* Rebuttal Pop-up / Spotlight Drawer */
+    .rebuttal-popup {
+      display: none;
+      background: #ffffff;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.18);
+      animation: popIn 0.15s ease-out;
+    }
+
+    .rebuttal-popup.visible {
+      display: block;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .popup-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .popup-triggers {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .popup-close {
+      background: #e2e8f0;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #334155;
+    }
+    .popup-close:hover { background: #cbd5e1; }
+
+    .popup-say {
+      font-size: 16px;
+      line-height: 1.55;
+      color: #0f172a;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      font-weight: 500;
+    }
+
+    .popup-alt {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1e293b;
+      padding: 10px 12px;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      body { height: auto; overflow: auto; }
+      .workspace { grid-template-columns: 1fr; height: auto; }
+      .objection-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>SSDI Live Call Script</h1>
+      <span class="badge">The National Disability</span>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="agentNameInput" class="input-sm" placeholder="Your Agent Name" oninput="updatePlaceholders()" />
+      <input type="text" id="cxNameInput" class="input-sm" placeholder="Customer Name" oninput="updatePlaceholders()" />
+      <button class="btn-reset" onclick="resetCall()">New Call / Reset</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- LEFT PANEL: MAIN CALL SCRIPT (WORD-FOR-WORD) -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Main Script</span>
+        <div class="tabs">
+          <button class="tab-btn active" id="tabOutbound" onclick="switchScriptMode('outbound')">Outbound Script</button>
+          <button class="tab-btn" id="tabCallback" onclick="switchScriptMode('callback')">Missed-Call Opener</button>
+          <button class="tab-btn" id="tabOutro" onclick="jumpTo('approved-outro')">Jump to NQ Outro</button>
+        </div>
+      </div>
+
+      <div class="panel-body" id="scriptContainer">
+        <!-- INTRO (OUTBOUND) -->
+        <div class="script-card" id="introOutbound">
+          <div class="step-top">
+            <span class="step-label">Intro</span>
+          </div>
+          <p class="spoken-text">
+            Hello, <span class="highlight-var cx-name">[CX Name]</span>?<br />
+            This is <span class="highlight-var agent-name">[Agent Name]</span>, Just calling since we received a form for you about your Social Security disability benefits.
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> If the CX asks about the company name say you’re with <strong>[The National Disability]</strong>
+          </div>
+        </div>
+
+        <!-- MISSED-CALL OPENER (CALLBACKS) -->
+        <div class="script-card hidden" id="introCallback">
+          <div class="step-top">
+            <span class="step-label">Missed-Call Opener (Callbacks)</span>
+          </div>
+          <p class="spoken-text">
+            Thank you for reaching <span class="highlight-var">The National Disability</span>. This is <span class="highlight-var agent-name">[Agent Name]</span> on a recorded line.<br /><br />
+            I believe you missed a call from us, right?<br /><br />
+            One of my colleagues tried to reach you earlier regarding your disability benefits.<br /><br />
+            As I can see, you currently have a disability or medical condition that has kept you from working; is that correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Then continue with the 1st Question.
+          </div>
+        </div>
+
+        <!-- QUESTION 1 -->
+        <div class="script-card" id="q1">
+          <div class="step-top">
+            <span class="step-label">1st Question</span>
+          </div>
+          <p class="spoken-text">
+            I was calling to confirm that you’re currently not working at all, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be completely out of work. Even part-time work counts as working.
+          </div>
+          <div class="q-controls">
+            <span><strong>IF YES = Q</strong> &nbsp;|&nbsp; <strong>IF NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q1', 'q', this)">Q (Yes)</button>
+              <button class="btn-nq" onclick="markStatus('q1', 'nq', this)">NQ (No)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 2 -->
+        <div class="script-card" id="q2">
+          <div class="step-top">
+            <span class="step-label">2nd Question</span>
+          </div>
+          <p class="spoken-text">
+            And that’s because of a disability or medical condition that has kept you out of work for at least the past 5 months; is that correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be out of work because of a medical condition for 5 continuous months or more.
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO or &lt; 5 mos = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q2', 'q', this)">Q (Yes)</button>
+              <button class="btn-nq" onclick="markStatus('q2', 'nq', this)">NQ (No)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 3 -->
+        <div class="script-card" id="q3">
+          <div class="step-top">
+            <span class="step-label">3rd Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm that your age is between 50 and 65, correct?
+          </p>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>Under 50 or over 65 = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q3', 'q', this)">Q (50–65)</button>
+              <button class="btn-nq" onclick="markStatus('q3', 'nq', this)">NQ (&lt;50 / &gt;65)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 4 -->
+        <div class="script-card" id="q4">
+          <div class="step-top">
+            <span class="step-label">4th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just so I have it right, which state are you currently living in?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> California (CA) and Colorado (CO) are bad states.
+          </div>
+          <div class="q-controls">
+            <span><strong>ANY OTHER STATE = Q</strong> &nbsp;|&nbsp; <strong>CA or CO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q4', 'q', this)">Q (Good State)</button>
+              <button class="btn-nq" onclick="markStatus('q4', 'nq', this)">NQ (CA / CO)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 5 -->
+        <div class="script-card" id="q5">
+          <div class="step-top">
+            <span class="step-label">5th Question</span>
+          </div>
+          <p class="spoken-text">
+            Alright, and within the last 10 years, you’ve worked for at least 5 years, even if on and off, where taxes were deducted, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Doesn’t have to be 5 straight years; can be on and off. Full-time or part-time counts as long as taxes were paid (Social Security Tax). Must be legal, on-the-books work.<br />
+            <em>If unsure, ask how many years they have paid taxes in the last 10 years.</em>
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q5', 'q', this)">Q (Yes)</button>
+              <button class="btn-nq" onclick="markStatus('q5', 'nq', this)">NQ (No)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 6 -->
+        <div class="script-card" id="q6">
+          <div class="step-top">
+            <span class="step-label">6th Question</span>
+          </div>
+          <p class="spoken-text">
+            Perfect, and you’re currently seeing a doctor or specialist on a regular basis for your condition, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be under current, regular care. Treatment that ended in the past does not count.
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q6', 'q', this)">Q (Yes)</button>
+              <button class="btn-nq" onclick="markStatus('q6', 'nq', this)">NQ (No)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 7 -->
+        <div class="script-card" id="q7">
+          <div class="step-top">
+            <span class="step-label">7th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm, your condition is not related to any current drug or alcohol use, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Active substance abuse that contributes to the disability is a disqualifier.
+          </div>
+          <div class="q-controls">
+            <span><strong>NOT RELATED = Q</strong> &nbsp;|&nbsp; <strong>RELATED / ACTIVE USE = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q7', 'q', this)">Q (Not Related)</button>
+              <button class="btn-nq" onclick="markStatus('q7', 'nq', this)">NQ (Related)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION 8 -->
+        <div class="script-card" id="q8">
+          <div class="step-top">
+            <span class="step-label">8th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm, you don’t have an attorney or representative with Social Security, and you’ve never had one on a disability claim, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> We are referring to any appointed attorney or representative on the SSDI claim, current or previous.
+          </div>
+          <div class="q-controls">
+            <span><strong>NO ATTORNEY = Q</strong> &nbsp;|&nbsp; <strong>HAS OR HAD AN ATTORNEY = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="markStatus('q8', 'q', this)">Q (No Attorney)</button>
+              <button class="btn-nq" onclick="markStatus('q8', 'nq', this)">NQ (Has/Had)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CLOSURE & HAND-OFF -->
+        <div class="script-card closure-box" id="closure">
+          <div class="step-top">
+            <span class="step-label">Closure (All Q)</span>
+          </div>
+          <p class="spoken-text">
+            Sounds perfect. I have good news for you here. You have a strong case to receive your disability benefits, which can reach up to $3,000 a month. I’ll connect both of us now to the licensed agent to complete your free evaluation. You might hear 10 automated quick questions about your work and medical history or get the agent directly; both are normal. I’ll stay with you till we’re connected. Sounds good?
+          </p>
+          <hr style="margin: 12px 0; border: 0; border-top: 1px solid #bfdbfe;" />
+          <div class="step-top">
+            <span class="step-label">Hand-Off</span>
+          </div>
+          <p class="spoken-text">
+            This is <span class="highlight-var agent-name">[Agent Name]</span>. I have with me <span class="highlight-var cx-name">[Customer Name]</span>. He/she is interested in receiving SSDI. You got it from here? <span class="highlight-var cx-name">[Customer Name]</span>, can you say hello?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> [ Always do a warm hand-off.]
+          </div>
+        </div>
+
+        <!-- APPROVED NQ OUTRO -->
+        <div class="script-card outro-box" id="approved-outro">
+          <div class="step-top">
+            <span class="step-label" style="color: var(--red);">Approved NQ Outro</span>
+          </div>
+          <p class="spoken-text">
+            “Unfortunately, based on the information you provided, we are unable to proceed with your request at this time. If there are any updates, we will let you know, okay?”
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> For any NQ, use this approved outro and end the call politely.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: OBJECTION BUTTONS & POP-UP REBUTTALS -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Objections & Rebuttals</span>
+        <span style="font-size: 12px; color: var(--muted);">Click any objection (or press Esc to close)</span>
+      </div>
+
+      <div class="panel-body">
+        <!-- POP-UP REBUTTAL CARD -->
+        <div class="rebuttal-popup" id="rebuttalPopup">
+          <div class="popup-header">
+            <div>
+              <div class="popup-title" id="popupTitle">Objection Title</div>
+              <div class="popup-triggers" id="popupTriggers">Customer says: "..."</div>
+            </div>
+            <button class="popup-close" onclick="closeRebuttal()">Close ✕</button>
+          </div>
+          <div class="popup-say" id="popupSay"></div>
+          <div class="popup-alt hidden" id="popupAlt"></div>
+          <div class="agent-note hidden" id="popupNote"></div>
+        </div>
+
+        <input
+          type="text"
+          id="searchInput"
+          class="search-box"
+          placeholder="Type what the customer said (e.g., scam, lawyer, working, VA, cost)..."
+          oninput="filterObjections()"
+        />
+
+        <div id="objectionsList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const REBUTTALS = [
+      {
+        id: "not-interested",
+        category: "Brush-Offs & Gatekeepers",
+        title: "Not Interested / Take Me Off List",
+        sub: "\"I'm not interested\" / \"Stop calling me\"",
+        triggers: "\"I'm not interested,\" \"Take me off your list,\" \"Stop calling me.\"",
+        say: "Totally get it—I’ll keep this under 10 seconds. I’m not selling anything; we’re just following up on a disability benefits request to see if this even applies to you. You’re currently out of work due to a medical condition, right?",
+        alt: "<strong>Alternative:</strong> Fair enough! We’re not selling anything—just checking if you qualify for monthly disability benefits. Are you currently out of work because of a health condition?",
+        note: "If they firmly demand DNC (Do Not Call), apologize politely, mark DNC, and end the call immediately."
+      },
+      {
+        id: "scam-who",
+        category: "Trust & Privacy",
+        title: "Is This a Scam? / Who Are You?",
+        sub: "\"Who is this?\" / \"I don't give info on the phone\"",
+        triggers: "\"Who are you?\" \"Is this a scam?\" \"I don't like giving out my info.\"",
+        say: "Fair question—there are a lot of spam calls out there. We’re The National Disability on a recorded line, and we connect people with licensed disability specialists. I don’t need any personal info—just a few quick yes-or-no questions to see if you qualify. First, you’re not working right now, correct?",
+        alt: "",
+        note: "Go straight to Question 1 right after answering so you keep control of the call."
+      },
+      {
+        id: "got-number",
+        category: "Trust & Privacy",
+        title: "How Did You Get My Number?",
+        sub: "\"How'd you get my info?\" / \"I didn't sign up\"",
+        triggers: "\"How did you get my number?\" \"Where did you get my info?\"",
+        say: "Someone submitted an online request using this number asking about Social Security disability benefits. I’m just verifying a few quick yes-or-no details to see if it applies to you—you’re currently out of work due to a medical condition, right?",
+        alt: "",
+        note: ""
+      },
+      {
+        id: "cost-catch",
+        category: "Trust & Privacy",
+        title: "How Much Does This Cost? / What's the Catch?",
+        sub: "\"Is this free?\" / \"I can't afford a lawyer\"",
+        triggers: "\"How much does this cost?\" \"What's the catch?\" \"I can't afford anyone.\"",
+        say: "Checking if you qualify is 100% free, and there are zero upfront costs. Let’s just make sure you meet the basic guidelines first—are you completely out of work right now?",
+        alt: "",
+        note: "Do not quote exact attorney contingency fees—let the licensed specialist explain that after transfer."
+      },
+      {
+        id: "busy-callback",
+        category: "Brush-Offs & Gatekeepers",
+        title: "I'm Busy / Call Me Back Later",
+        sub: "\"I'm driving\" / \"At the doctor\" / \"Call later\"",
+        triggers: "\"I'm busy right now,\" \"Call me back later,\" \"I'm at an appointment.\"",
+        say: "No problem at all! We’re available Monday through Friday, 9 AM to 5 PM. What’s the best time to reach you for a quick 5-to-10-minute call?",
+        alt: "",
+        note: "Schedule the callback strictly within working hours (Mon–Fri, 9 AM – 5 PM)."
+      },
+      {
+        id: "wrong-number",
+        category: "Brush-Offs & Gatekeepers",
+        title: "Wrong Number",
+        sub: "\"Wrong number\" / \"Nobody by that name\"",
+        triggers: "\"You have the wrong number,\" \"Nobody by that name lives here.\"",
+        say: "My apologies for the mix-up! Someone entered this number on a disability benefits form. Since I have you—we help folks out of work due to a medical condition get monthly SSDI benefits. Does that happen to apply to you, or no?",
+        alt: "",
+        note: "If they say no, thank them politely and end the call."
+      },
+      {
+        id: "already-applied",
+        category: "Claims & Eligibility",
+        title: "Already Applied / Have a Lawyer",
+        sub: "\"I already filed\" / \"Waiting on hearing\" / \"Got an attorney\"",
+        triggers: "\"I already applied,\" \"I'm waiting on my appeal/hearing,\" \"I have a disability lawyer.\"",
+        say: "Got it—thanks for letting me know. Quick question: when did you apply, and do you currently have—or have you ever had—an attorney or representative on that claim?",
+        alt: "",
+        note: "NQ if they have or had an attorney/representative on the claim, OR if they applied, were denied, or appealed within the last 6 months. If they applied 6+ months ago with NO attorney, continue intake."
+      },
+      {
+        id: "denied-before",
+        category: "Claims & Eligibility",
+        title: "Denied Before / Don't Think I Qualify",
+        sub: "\"They turned me down\" / \"I won't qualify\"",
+        triggers: "\"I've been denied before,\" \"Social Security rejects everybody,\" \"I don't think I qualify.\"",
+        say: "Most people actually get denied the first time—that’s super common. Do you remember why they denied you, or why you feel you wouldn't qualify?",
+        alt: "",
+        note: "If their reason passes your 8 questions (and they have no attorney + denial was 6+ months ago), continue intake. Pass all 8 = qualifies for transfer."
+      },
+      {
+        id: "working-now",
+        category: "Claims & Eligibility",
+        title: "I'm Working Right Now (Part-Time / Full-Time)",
+        sub: "\"I work part-time\" / \"Just a few hours a week\"",
+        triggers: "\"I'm working right now,\" \"I still work part-time,\" \"I only work a few hours.\"",
+        say: "Gotcha. Because SSDI is strictly for people who are completely out of work due to a medical condition, even part-time work disqualifies a claim right now. Just to confirm, are you currently working at all?",
+        alt: "",
+        note: "Still working (even part-time) = NQ. Use the Approved NQ Outro and end politely."
+      },
+      {
+        id: "no-disability",
+        category: "Claims & Eligibility",
+        title: "No Disability / Never Applied",
+        sub: "\"I'm not disabled\" / \"I never applied for SSDI\"",
+        triggers: "\"I don't have a disability,\" \"I never applied for SSDI.\"",
+        say: "No problem at all—that’s why we check first before anyone applies. Just to be sure, you don't have any physical or mental health condition keeping you from working right now, correct?",
+        alt: "<strong>If they say 'I never applied':</strong> That’s exactly why we’re calling—to see if you qualify before you apply. Just a few quick yes-or-no questions: are you currently working at all?",
+        note: "If they have no medical condition keeping them from working = NQ."
+      },
+      {
+        id: "other-benefits",
+        category: "Other Benefits",
+        title: "On Medicare / Food Stamps / Widow's",
+        sub: "\"I get Medicare\" / \"SNAP\" / \"Widow's benefits\"",
+        triggers: "\"I'm already on Medicare,\" \"I get food stamps/SNAP,\" \"I draw widow's benefits.\"",
+        say: "Thanks for letting me know—that doesn’t automatically disqualify you from SSDI. Just be sure to mention it when we connect you to the specialist. To check the basics first: you’re completely out of work right now, correct?",
+        alt: "",
+        note: "Continue intake! Medicare, Medicaid, SNAP, or widow's benefits do NOT disqualify. Currently receiving SSDI or SSI IS an NQ."
+      },
+      {
+        id: "veteran-va",
+        category: "Other Benefits",
+        title: "I'm a Veteran / Get VA Benefits",
+        sub: "\"I get VA disability\" / \"100% P&T VA\"",
+        triggers: "\"I'm a veteran,\" \"I already get VA disability benefits.\"",
+        say: "Thank you for your service. VA benefits and Social Security Disability are completely separate programs—veterans can qualify for both. Let’s check your eligibility real quick: are you currently working at all?",
+        alt: "",
+        note: "Veteran status and VA disability do NOT disqualify. Continue intake."
+      },
+      {
+        id: "what-condition",
+        category: "Trust & Privacy",
+        title: "What Disability Do I Have? / System Info",
+        sub: "\"What does your screen say?\" / \"What condition?\"",
+        triggers: "\"What disability do I have?\" \"What do you see on your system?\"",
+        say: "For privacy reasons, our screen doesn’t show medical details—just that a request came in for a health condition keeping someone out of work. Is that the case for you right now?",
+        alt: "",
+        note: ""
+      },
+      {
+        id: "location",
+        category: "Trust & Privacy",
+        title: "Where Are You Located?",
+        sub: "\"Where are you calling from?\" / \"What state?\"",
+        triggers: "\"Where are you located?\" \"Where is your office?\"",
+        say: "We’re a remote team working across the U.S., so we help clients nationwide. Let’s run through these quick yes-or-no questions to see if you qualify—are you currently out of work?",
+        alt: "<strong>If they press for exact address:</strong> I’m sorry, I’m unable to share our exact office address for security and privacy reasons—appreciate your understanding! Are you currently out of work due to a medical condition?",
+        note: ""
+      },
+      {
+        id: "dq-rules",
+        category: "Quick Disqualifiers",
+        title: "Under 50 / Over 65 / Not a U.S. Citizen",
+        sub: "Immediate polite disqualification",
+        triggers: "Caller is under 50, over 65, or states they are not a U.S. citizen.",
+        say: "Unfortunately, based on our current program guidelines, we’re unable to proceed with your request at this time. I appreciate you taking the time to speak with me, and I hope you have a great rest of your day.",
+        alt: "",
+        note: "End the call politely."
+      }
+    ];
+
+    let activeObjectionId = null;
+
+    function renderObjections(filterText = "") {
+      const container = document.getElementById("objectionsList");
+      const query = filterText.trim().toLowerCase();
+
+      const filtered = REBUTTALS.filter(item =>
+        item.title.toLowerCase().includes(query) ||
+        item.sub.toLowerCase().includes(query) ||
+        item.triggers.toLowerCase().includes(query) ||
+        item.say.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="color:#64748b; font-size:13px; padding:12px 0;">No matching objection found. Try searching keywords like <em>scam, lawyer, working, VA, cost, busy</em>.</p>`;
+        return;
+      }
+
+      const categories = [...new Set(filtered.map(i => i.category))];
+      let html = "";
+
+      categories.forEach(cat => {
+        html += `<div class="category-label">${cat}</div><div class="objection-grid">`;
+        filtered.filter(i => i.category === cat).forEach(item => {
+          const isActive = item.id === activeObjectionId ? "active" : "";
+          html += `
+            <button class="obj-btn ${isActive}" onclick="openRebuttal('${item.id}')">
+              <span class="obj-btn-title">${item.title}</span>
+              <span class="obj-btn-sub">${item.sub}</span>
+            </button>
+          `;
+        });
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openRebuttal(id) {
+      const item = REBUTTALS.find(r => r.id === id);
+      if (!item) return;
+
+      activeObjectionId = id;
+      document.getElementById("popupTitle").textContent = item.title;
+      document.getElementById("popupTriggers").textContent = "Common phrases: " + item.triggers;
+      document.getElementById("popupSay").textContent = item.say;
+
+      const altEl = document.getElementById("popupAlt");
+      if (item.alt) {
+        altEl.innerHTML = item.alt;
+        altEl.classList.remove("hidden");
+      } else {
+        altEl.classList.add("hidden");
+      }
+
+      const noteEl = document.getElementById("popupNote");
+      if (item.note) {
+        noteEl.innerHTML = `<strong>Agent Note:</strong> ${item.note}`;
+        noteEl.classList.remove("hidden");
+      } else {
+        noteEl.classList.add("hidden");
+      }
+
+      const popup = document.getElementById("rebuttalPopup");
+      popup.classList.add("visible");
+      popup.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function closeRebuttal() {
+      activeObjectionId = null;
+      document.getElementById("rebuttalPopup").classList.remove("visible");
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function filterObjections() {
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function switchScriptMode(mode) {
+      const outCard = document.getElementById("introOutbound");
+      const cbCard = document.getElementById("introCallback");
+      const tabOut = document.getElementById("tabOutbound");
+      const tabCb = document.getElementById("tabCallback");
+
+      if (mode === "outbound") {
+        outCard.classList.remove("hidden");
+        cbCard.classList.add("hidden");
+        tabOut.classList.add("active");
+        tabCb.classList.remove("active");
+      } else {
+        outCard.classList.add("hidden");
+        cbCard.classList.remove("hidden");
+        tabOut.classList.remove("active");
+        tabCb.classList.add("active");
+      }
+      document.getElementById("scriptContainer").scrollTop = 0;
+    }
+
+    function jumpTo(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function markStatus(cardId, status, btnEl) {
+      const card = document.getElementById(cardId);
+      card.classList.remove("status-q", "status-nq");
+      card.querySelectorAll(".btn-q, .btn-nq").forEach(b => b.classList.remove("selected"));
+
+      card.classList.add(status === "q" ? "status-q" : "status-nq");
+      btnEl.classList.add("selected");
+
+      if (status === "nq") {
+        jumpTo("approved-outro");
+      }
+    }
+
+    function updatePlaceholders() {
+      const agent = document.getElementById("agentNameInput").value.trim() || "[Agent Name]";
+      const cx = document.getElementById("cxNameInput").value.trim() || "[CX Name]";
+
+      document.querySelectorAll(".agent-name").forEach(el => el.textContent = agent);
+      document.querySelectorAll(".cx-name").forEach(el => el.textContent = cx);
+    }
+
+    function resetCall() {
+      document.getElementById("cxNameInput").value = "";
+      updatePlaceholders();
+
+      document.querySelectorAll(".script-card").forEach(card => {
+        card.classList.remove("status-q", "status-nq");
+        card.querySelectorAll(".btn-q, .btn-nq").forEach(b => b.classList.remove("selected"));
+      });
+
+      closeRebuttal();
+      document.getElementById("searchInput").value = "";
+      renderObjections();
+      document.getElementById("scriptContainer").scrollTop = 0;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeRebuttal();
+    });
+
+    // Initial render
+    renderObjections();
+  </script>
+</body>
+</html>
+
+
+
