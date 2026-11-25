@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forge Outreach — SSDI Call Script</title>
+  <style>
+    :root {
+      /* Dark Mode Default (Forge Outreach Slate & Ember) */
+      --bg: #0b1120;
+      --header-bg: #060a14;
+      --surface: #111827;
+      --surface-soft: #1e293b;
+      --surface-hover: #263349;
+      --border: #1f2937;
+      --border-strong: #334155;
+      --text: #f8fafc;
+      --text-soft: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --brand-accent: #f97316;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.11);
+      --green-border: rgba(34, 197, 94, 0.45);
+      --red: #f87171;
+      --red-solid: #dc2626;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --red-border: rgba(239, 68, 68, 0.5);
+      --amber: #fbbf24;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --amber-border: rgba(245, 158, 11, 0.4);
+      --var-bg: rgba(59, 130, 246, 0.22);
+      --var-text: #93c5fd;
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --header-bg: #0f172a;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --surface-hover: #eff6ff;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-soft: #475569;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --brand-accent: #ea580c;
+      --green: #15803d;
+      --green-bg: #f0fdf4;
+      --green-border: #86efac;
+      --red: #b91c1c;
+      --red-solid: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fca5a5;
+      --amber: #92400e;
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --var-bg: #dbeafe;
+      --var-text: #1e40af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* Header */
+    header {
+      background: var(--header-bg);
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid #1e293b;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: var(--brand-accent);
+      display: inline-block;
+    }
+
+    .brand-divider {
+      color: #475569;
+      font-weight: 400;
+    }
+
+    .brand-sub {
+      color: #cbd5e1;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .badge {
+      background: #1e293b;
+      color: #7dd3fc;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-sm {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 160px;
+    }
+
+    .input-sm:focus {
+      outline: none;
+      border-color: var(--brand-accent);
+    }
+
+    .input-sm::placeholder { color: #94a3b8; }
+
+    .btn-theme {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-theme:hover { background: #334155; }
+
+    .btn-reset {
+      background: var(--brand-accent);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-reset:hover { opacity: 0.9; }
+
+    /* Split Workspace */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.22fr 1.08fr;
+      gap: 20px;
+      padding: 18px 24px;
+      height: calc(100vh - 58px);
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .panel-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-soft);
+    }
+
+    .progress-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: var(--border);
+      color: var(--text);
+    }
+    .progress-pill.all-q {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+    .progress-pill.has-nq {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+    }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      scroll-behavior: smooth;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tab-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Script Cards */
+    .script-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      transition: all 0.16s ease;
+    }
+
+    .script-card.status-q {
+      border-color: var(--green-border);
+      border-left: 6px solid var(--green);
+      background: var(--green-bg);
+    }
+
+    .script-card.status-nq {
+      border-color: var(--red-border);
+      border-left: 6px solid var(--red-solid);
+      background: var(--red-bg);
+    }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .step-label {
+      font-size: 12.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    .spoken-text {
+      font-size: 17.5px;
+      line-height: 1.62;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .highlight-var {
+      background: var(--var-bg);
+      color: var(--var-text);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .agent-note {
+      margin-top: 12px;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .q-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-strong);
+      font-size: 12.5px;
+      color: var(--text-soft);
+    }
+
+    .q-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-q, .btn-nq {
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      user-select: none;
+    }
+
+    .btn-q {
+      background: transparent;
+      color: var(--green);
+      border: 1.5px solid var(--green-border);
+    }
+    .btn-q:hover { background: var(--green-bg); }
+    .btn-q.selected {
+      background: #16a34a;
+      color: #fff;
+      border-color: #16a34a;
+    }
+
+    .btn-nq {
+      background: transparent;
+      color: var(--red);
+      border: 1.5px solid var(--red-border);
+    }
+    .btn-nq:hover { background: var(--red-bg); }
+    .btn-nq.selected {
+      background: var(--red-solid);
+      color: #fff;
+      border-color: var(--red-solid);
+    }
+
+    /* Inline NQ Outro Box (Appears directly beneath the NQ question) */
+    .inline-nq-outro {
+      margin-top: 14px;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 2px solid var(--red-solid);
+      border-radius: 10px;
+      animation: popIn 0.16s ease-out;
+    }
+
+    .inline-nq-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--red);
+    }
+
+    /* Closure Box directly beneath Q8 */
+    .closure-box {
+      background: var(--primary-soft);
+      border: 2px solid var(--primary);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+      animation: popIn 0.18s ease-out;
+    }
+
+    .outcome-placeholder {
+      text-align: center;
+      padding: 16px;
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      color: var(--text-soft);
+      font-size: 13.5px;
+      background: var(--surface-soft);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12.5px;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Right Panel: Organized Rebuttals */
+    .search-box {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 10px;
+      font-size: 14.5px;
+      margin-bottom: 14px;
+      background: var(--surface-soft);
+      color: var(--text);
+    }
+    .search-box::placeholder { color: var(--text-soft); }
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .category-group {
+      margin-bottom: 18px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cat-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Category Accent Colors so buttons don't blur together */
+    .cat-trust .cat-dot { background: #38bdf8; }
+    .cat-trust .category-header { color: #38bdf8; }
+    .cat-trust .obj-btn { border-left: 4px solid #38bdf8; }
+
+    .cat-brush .cat-dot { background: #fbbf24; }
+    .cat-brush .category-header { color: #fbbf24; }
+    .cat-brush .obj-btn { border-left: 4px solid #fbbf24; }
+
+    .cat-claims .cat-dot { background: #c084fc; }
+    .cat-claims .category-header { color: #c084fc; }
+    .cat-claims .obj-btn { border-left: 4px solid #c084fc; }
+
+    .cat-benefits .cat-dot { background: #34d399; }
+    .cat-benefits .category-header { color: #34d399; }
+    .cat-benefits .obj-btn { border-left: 4px solid #34d399; }
+
+    .cat-dq .cat-dot { background: #f87171; }
+    .cat-dq .category-header { color: #f87171; }
+    .cat-dq .obj-btn { border-left: 4px solid #f87171; }
+
+    [data-theme="light"] .cat-trust .category-header { color: #0284c7; }
+    [data-theme="light"] .cat-brush .category-header { color: #d97706; }
+    [data-theme="light"] .cat-claims .category-header { color: #7e22ce; }
+    [data-theme="light"] .cat-benefits .category-header { color: #059669; }
+    [data-theme="light"] .cat-dq .category-header { color: #dc2626; }
+
+    .objection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .obj-btn {
+      text-align: left;
+      background: var(--surface-soft);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 13px 15px;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .obj-btn:hover {
+      background: var(--surface-hover);
+      transform: translateY(-1px);
+    }
+
+    .obj-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+
+    .obj-btn-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .obj-btn-sub {
+      font-size: 12.5px;
+      color: var(--text-soft);
+      line-height: 1.35;
+    }
+
+    .obj-btn.active .obj-btn-title { color: #fff; }
+    .obj-btn.active .obj-btn-sub { color: #dbeafe; }
+
+    /* Rebuttal Spotlight Box */
+    .rebuttal-popup {
+      display: none;
+      background: var(--surface-soft);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.15s ease-out;
+    }
+
+    .rebuttal-popup.visible { display: block; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .popup-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .popup-triggers {
+      font-size: 13px;
+      color: var(--text-soft);
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    .popup-close {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .popup-close:hover { background: var(--surface-hover); }
+
+    .popup-say {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--surface);
+      padding: 15px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      font-weight: 500;
+    }
+
+    .popup-alt {
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--text);
+      padding: 12px 15px;
+      background: var(--surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: 8px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1024px) {
+      body { height: auto; overflow: auto; }
+      .workspace { grid-template-columns: 1fr; height: auto; padding: 12px; }
+      .objection-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">
+        <span class="brand-dot"></span>
+        <span>Forge Outreach</span>
+        <span class="brand-divider">|</span>
+        <span class="brand-sub">SSDI Call Script</span>
+      </div>
+      <span class="badge">Client: The National Disability</span>
+    </div>
+    <div class="header-controls">
+      <input type="text" id="agentNameInput" class="input-sm" placeholder="Your Agent Name" oninput="updatePlaceholders(true)" />
+      <input type="text" id="cxNameInput" class="input-sm" placeholder="Customer Name" oninput="updatePlaceholders(false)" />
+      <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()">☀️ Light Mode</button>
+      <button class="btn-reset" onclick="resetCall()">New Call / Reset</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- LEFT PANEL: MAIN SCRIPT -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title-group">
+          <span class="panel-title">Main Script</span>
+          <span class="progress-pill" id="progressPill">0 / 8 Answered</span>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" id="tabOutbound" onclick="switchScriptMode('outbound')">Outbound</button>
+          <button class="tab-btn" id="tabCallback" onclick="switchScriptMode('callback')">Missed-Call</button>
+        </div>
+      </div>
+
+      <div class="panel-body" id="scriptContainer">
+        <!-- INTRO (OUTBOUND) -->
+        <div class="script-card" id="introOutbound">
+          <div class="step-top">
+            <span class="step-label">Intro</span>
+          </div>
+          <p class="spoken-text">
+            Hello, <span class="highlight-var cx-name">[CX Name]</span>?<br />
+            This is <span class="highlight-var agent-name">[Agent Name]</span>, Just calling since we received a form for you about your Social Security disability benefits.
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> If the CX asks about the company name say you’re with <strong>[The National Disability]</strong>
+          </div>
+        </div>
+
+        <!-- MISSED-CALL OPENER (CALLBACKS) -->
+        <div class="script-card hidden" id="introCallback">
+          <div class="step-top">
+            <span class="step-label">Missed-Call Opener (Callbacks)</span>
+          </div>
+          <p class="spoken-text">
+            Thank you for reaching <span class="highlight-var">The National Disability</span>. This is <span class="highlight-var agent-name">[Agent Name]</span> on a recorded line.<br /><br />
+            I believe you missed a call from us, right?<br /><br />
+            One of my colleagues tried to reach you earlier regarding your disability benefits.<br /><br />
+            As I can see, you currently have a disability or medical condition that has kept you from working; is that correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Then continue with the 1st Question.
+          </div>
+        </div>
+
+        <!-- QUESTION 1 -->
+        <div class="script-card" id="q1" data-status="">
+          <div class="step-top">
+            <span class="step-label">1st Question</span>
+          </div>
+          <p class="spoken-text">
+            I was calling to confirm that you’re currently not working at all, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be completely out of work. Even part-time work counts as working.
+          </div>
+          <div class="q-controls">
+            <span><strong>IF YES = Q</strong> &nbsp;|&nbsp; <strong>IF NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q1', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q1', 'nq')">NQ (No)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 2 -->
+        <div class="script-card" id="q2" data-status="">
+          <div class="step-top">
+            <span class="step-label">2nd Question</span>
+          </div>
+          <p class="spoken-text">
+            And that’s because of a disability or medical condition that has kept you out of work for at least the past 5 months; is that correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be out of work because of a medical condition for 5 continuous months or more.
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO or &lt; 5 mos = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q2', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q2', 'nq')">NQ (No)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 3 -->
+        <div class="script-card" id="q3" data-status="">
+          <div class="step-top">
+            <span class="step-label">3rd Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm that your age is between 50 and 65, correct?
+          </p>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>Under 50 or over 65 = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q3', 'q')">Q (50–65)</button>
+              <button class="btn-nq" onclick="toggleStatus('q3', 'nq')">NQ (&lt;50 / &gt;65)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 4 -->
+        <div class="script-card" id="q4" data-status="">
+          <div class="step-top">
+            <span class="step-label">4th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just so I have it right, which state are you currently living in?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> California (CA) and Colorado (CO) are bad states.
+          </div>
+          <div class="q-controls">
+            <span><strong>ANY OTHER STATE = Q</strong> &nbsp;|&nbsp; <strong>CA or CO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q4', 'q')">Q (Good State)</button>
+              <button class="btn-nq" onclick="toggleStatus('q4', 'nq')">NQ (CA / CO)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 5 -->
+        <div class="script-card" id="q5" data-status="">
+          <div class="step-top">
+            <span class="step-label">5th Question</span>
+          </div>
+          <p class="spoken-text">
+            Alright, and within the last 10 years, you’ve worked for at least 5 years, even if on and off, where taxes were deducted, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Doesn’t have to be 5 straight years; can be on and off. Full-time or part-time counts as long as taxes were paid (Social Security Tax). Must be legal, on-the-books work.<br />
+            <em>If unsure, ask how many years they have paid taxes in the last 10 years.</em>
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q5', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q5', 'nq')">NQ (No)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 6 -->
+        <div class="script-card" id="q6" data-status="">
+          <div class="step-top">
+            <span class="step-label">6th Question</span>
+          </div>
+          <p class="spoken-text">
+            Perfect, and you’re currently seeing a doctor or specialist on a regular basis for your condition, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Must be under current, regular care. Treatment that ended in the past does not count.
+          </div>
+          <div class="q-controls">
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q6', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q6', 'nq')">NQ (No)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 7 -->
+        <div class="script-card" id="q7" data-status="">
+          <div class="step-top">
+            <span class="step-label">7th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm, your condition is not related to any current drug or alcohol use, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> Active substance abuse that contributes to the disability is a disqualifier.
+          </div>
+          <div class="q-controls">
+            <span><strong>NOT RELATED = Q</strong> &nbsp;|&nbsp; <strong>RELATED / ACTIVE USE = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q7', 'q')">Q (Not Related)</button>
+              <button class="btn-nq" onclick="toggleStatus('q7', 'nq')">NQ (Related)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUESTION 8 -->
+        <div class="script-card" id="q8" data-status="">
+          <div class="step-top">
+            <span class="step-label">8th Question</span>
+          </div>
+          <p class="spoken-text">
+            Just to confirm, you don’t have an attorney or representative with Social Security, and you’ve never had one on a disability claim, correct?
+          </p>
+          <div class="agent-note">
+            <strong>Note:</strong> We are referring to any appointed attorney or representative on the SSDI claim, current or previous.
+          </div>
+          <div class="q-controls">
+            <span><strong>NO ATTORNEY = Q</strong> &nbsp;|&nbsp; <strong>HAS OR HAD AN ATTORNEY = NQ</strong></span>
+            <div class="q-btns">
+              <button class="btn-q" onclick="toggleStatus('q8', 'q')">Q (No Attorney)</button>
+              <button class="btn-nq" onclick="toggleStatus('q8', 'nq')">NQ (Has/Had)</button>
+            </div>
+          </div>
+          <div class="inline-outro-slot"></div>
+        </div>
+
+        <!-- QUALIFIED CLOSURE DIRECTLY UNDER QUESTION 8 -->
+        <div id="closureArea">
+          <div class="outcome-placeholder" id="closurePlaceholder">
+            Mark all 8 questions <strong>Q</strong> above to unlock the <strong>Qualified Closure &amp; Warm Hand-Off</strong> right here.
+            <div style="margin-top: 6px;">
+              <button class="link-btn" onclick="forceClosure(true)">Preview Closure</button>
+            </div>
+          </div>
+
+          <div class="script-card closure-box hidden" id="closureBox">
+            <div class="step-top">
+              <span class="step-label">Qualified Closure (All 8 Q)</span>
+              <button class="link-btn" onclick="forceClosure(false)">Hide</button>
+            </div>
+            <p class="spoken-text">
+              Sounds perfect. I have good news for you here. You have a strong case to receive your disability benefits, which can reach up to $3,000 a month. I’ll connect both of us now to the licensed agent to complete your free evaluation. You might hear 10 automated quick questions about your work and medical history or get the agent directly; both are normal. I’ll stay with you till we’re connected. Sounds good?
+            </p>
+            <hr style="margin: 14px 0; border: 0; border-top: 1px solid var(--border-strong);" />
+            <div class="step-top">
+              <span class="step-label">Hand-Off</span>
+            </div>
+            <p class="spoken-text">
+              This is <span class="highlight-var agent-name">[Agent Name]</span>. I have with me <span class="highlight-var cx-name">[Customer Name]</span>. He/she is interested in receiving SSDI. You got it from here? <span class="highlight-var cx-name">[Customer Name]</span>, can you say hello?
+            </p>
+            <div class="agent-note">
+              <strong>Note:</strong> [ Always do a warm hand-off.]
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: OBJECTIONS & REBUTTALS -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Objections &amp; Rebuttals</span>
+        <span style="font-size: 12px; color: var(--text-soft);">Click an objection (Esc to close)</span>
+      </div>
+
+      <div class="panel-body">
+        <!-- POP-UP REBUTTAL SPOTLIGHT -->
+        <div class="rebuttal-popup" id="rebuttalPopup">
+          <div class="popup-header">
+            <div>
+              <div class="popup-title" id="popupTitle">Objection Title</div>
+              <div class="popup-triggers" id="popupTriggers">Customer says: "..."</div>
+            </div>
+            <button class="popup-close" onclick="closeRebuttal()">Close ✕</button>
+          </div>
+          <div class="popup-say" id="popupSay"></div>
+          <div class="popup-alt hidden" id="popupAlt"></div>
+          <div class="agent-note hidden" id="popupNote"></div>
+        </div>
+
+        <input
+          type="text"
+          id="searchInput"
+          class="search-box"
+          placeholder="Search what the customer said (e.g., scam, lawyer, working, VA, cost)..."
+          oninput="filterObjections()"
+        />
+
+        <div id="objectionsList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const REBUTTALS = [
+      {
+        id: "scam-who",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "Is This a Scam? / Who Are You?",
+        sub: "\"Who is this?\" / \"I don't give info on the phone\"",
+        triggers: "\"Who are you?\" \"Is this a scam?\" \"I don't like giving out my info.\"",
+        say: "Fair question—there are a lot of spam calls out there. We’re The National Disability on a recorded line, and we connect people with licensed disability specialists. I don’t need any personal info—just a few quick yes-or-no questions to see if you qualify. First, you’re not working right now, correct?",
+        alt: "",
+        note: "Go straight to Question 1 right after answering so you keep control of the call."
+      },
+      {
+        id: "got-number",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "How Did You Get My Number?",
+        sub: "\"How'd you get my info?\" / \"I didn't sign up\"",
+        triggers: "\"How did you get my number?\" \"Where did you get my info?\"",
+        say: "Someone submitted an online request using this number asking about Social Security disability benefits. I’m just verifying a few quick yes-or-no details to see if it applies to you—you’re currently out of work due to a medical condition, right?",
+        alt: "",
+        note: ""
+      },
+      {
+        id: "cost-catch",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "How Much Does This Cost? / Catch?",
+        sub: "\"Is this free?\" / \"I can't afford a lawyer\"",
+        triggers: "\"How much does this cost?\" \"What's the catch?\" \"I can't afford anyone.\"",
+        say: "Checking if you qualify is 100% free, and there are zero upfront costs. Let’s just make sure you meet the basic guidelines first—are you completely out of work right now?",
+        alt: "",
+        note: "Do not quote exact attorney contingency fees—let the licensed specialist explain that after transfer."
+      },
+      {
+        id: "what-condition",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "What Disability Do I Have? / Screen Info",
+        sub: "\"What does your screen say?\" / \"What condition?\"",
+        triggers: "\"What disability do I have?\" \"What do you see on your system?\"",
+        say: "For privacy reasons, our screen doesn’t show medical details—just that a request came in for a health condition keeping someone out of work. Is that the case for you right now?",
+        alt: "",
+        note: ""
+      },
+      {
+        id: "location",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "Where Are You Located?",
+        sub: "\"Where are you calling from?\" / \"What state?\"",
+        triggers: "\"Where are you located?\" \"Where is your office?\"",
+        say: "We’re a remote team working across the U.S., so we help clients nationwide. Let’s run through these quick yes-or-no questions to see if you qualify—are you currently out of work?",
+        alt: "<strong>If they press for exact address:</strong> I’m sorry, I’m unable to share our exact office address for security and privacy reasons—appreciate your understanding! Are you currently out of work due to a medical condition?",
+        note: ""
+      },
+      {
+        id: "not-interested",
+        category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
+        title: "Not Interested / Take Me Off List",
+        sub: "\"I'm not interested\" / \"Stop calling me\"",
+        triggers: "\"I'm not interested,\" \"Take me off your list,\" \"Stop calling me.\"",
+        say: "Totally get it—I’ll keep this under 10 seconds. I’m not selling anything; we’re just following up on a disability benefits request to see if this even applies to you. You’re currently out of work due to a medical condition, right?",
+        alt: "<strong>Alternative:</strong> Fair enough! We’re not selling anything—just checking if you qualify for monthly disability benefits. Are you currently out of work because of a health condition?",
+        note: "If they firmly demand DNC (Do Not Call), apologize politely, mark DNC, and end the call immediately."
+      },
+      {
+        id: "busy-callback",
+        category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
+        title: "I'm Busy / Call Me Back Later",
+        sub: "\"I'm driving\" / \"At the doctor\" / \"Call later\"",
+        triggers: "\"I'm busy right now,\" \"Call me back later,\" \"I'm at an appointment.\"",
+        say: "No problem at all! We’re available Monday through Friday, 9 AM to 5 PM. What’s the best time to reach you for a quick 5-to-10-minute call?",
+        alt: "",
+        note: "Schedule the callback strictly within working hours (Mon–Fri, 9 AM – 5 PM)."
+      },
+      {
+        id: "wrong-number",
+        category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
+        title: "Wrong Number",
+        sub: "\"Wrong number\" / \"Nobody by that name\"",
+        triggers: "\"You have the wrong number,\" \"Nobody by that name lives here.\"",
+        say: "My apologies for the mix-up! Someone entered this number on a disability benefits form. Since I have you—we help folks out of work due to a medical condition get monthly SSDI benefits. Does that happen to apply to you, or no?",
+        alt: "",
+        note: "If they say no, thank them politely and end the call."
+      },
+      {
+        id: "already-applied",
+        category: "Claims & Eligibility",
+        catClass: "cat-claims",
+        title: "Already Applied / Have a Lawyer",
+        sub: "\"I already filed\" / \"Waiting on hearing\" / \"Got an attorney\"",
+        triggers: "\"I already applied,\" \"I'm waiting on my appeal/hearing,\" \"I have a disability lawyer.\"",
+        say: "Got it—thanks for letting me know. Quick question: when did you apply, and do you currently have—or have you ever had—an attorney or representative on that claim?",
+        alt: "",
+        note: "NQ if they have or had an attorney/representative on the claim, OR if they applied, were denied, or appealed within the last 6 months. If they applied 6+ months ago with NO attorney, continue intake."
+      },
+      {
+        id: "denied-before",
+        category: "Claims & Eligibility",
+        catClass: "cat-claims",
+        title: "Denied Before / Don't Think I Qualify",
+        sub: "\"They turned me down\" / \"I won't qualify\"",
+        triggers: "\"I've been denied before,\" \"Social Security rejects everybody,\" \"I don't think I qualify.\"",
+        say: "Most people actually get denied the first time—that’s super common. Do you remember why they denied you, or why you feel you wouldn't qualify?",
+        alt: "",
+        note: "If their reason passes your 8 questions (and they have no attorney + denial was 6+ months ago), continue intake. Pass all 8 = qualifies for transfer."
+      },
+      {
+        id: "working-now",
+        category: "Claims & Eligibility",
+        catClass: "cat-claims",
+        title: "I'm Working Right Now (Part/Full-Time)",
+        sub: "\"I work part-time\" / \"Just a few hours a week\"",
+        triggers: "\"I'm working right now,\" \"I still work part-time,\" \"I only work a few hours.\"",
+        say: "Gotcha. Because SSDI is strictly for people who are completely out of work due to a medical condition, even part-time work disqualifies a claim right now. Just to confirm, are you currently working at all?",
+        alt: "",
+        note: "Still working (even part-time) = NQ. Click NQ on Question 1 to pull up the Approved NQ Outro."
+      },
+      {
+        id: "no-disability",
+        category: "Claims & Eligibility",
+        catClass: "cat-claims",
+        title: "No Disability / Never Applied",
+        sub: "\"I'm not disabled\" / \"I never applied for SSDI\"",
+        triggers: "\"I don't have a disability,\" \"I never applied for SSDI.\"",
+        say: "No problem at all—that’s why we check first before anyone applies. Just to be sure, you don't have any physical or mental health condition keeping you from working right now, correct?",
+        alt: "<strong>If they say 'I never applied':</strong> That’s exactly why we’re calling—to see if you qualify before you apply. Just a few quick yes-or-no questions: are you currently working at all?",
+        note: "If they have no medical condition keeping them from working = NQ."
+      },
+      {
+        id: "other-benefits",
+        category: "Other Benefits",
+        catClass: "cat-benefits",
+        title: "On Medicare / Food Stamps / Widow's",
+        sub: "\"I get Medicare\" / \"SNAP\" / \"Widow's benefits\"",
+        triggers: "\"I'm already on Medicare,\" \"I get food stamps/SNAP,\" \"I draw widow's benefits.\"",
+        say: "Thanks for letting me know—that doesn’t automatically disqualify you from SSDI. Just be sure to mention it when we connect you to the specialist. To check the basics first: you’re completely out of work right now, correct?",
+        alt: "",
+        note: "Continue intake! Medicare, Medicaid, SNAP, or widow's benefits do NOT disqualify. Currently receiving SSDI or SSI IS an NQ."
+      },
+      {
+        id: "veteran-va",
+        category: "Other Benefits",
+        catClass: "cat-benefits",
+        title: "I'm a Veteran / Get VA Benefits",
+        sub: "\"I get VA disability\" / \"100% P&T VA\"",
+        triggers: "\"I'm a veteran,\" \"I already get VA disability benefits.\"",
+        say: "Thank you for your service. VA benefits and Social Security Disability are completely separate programs—veterans can qualify for both. Let’s check your eligibility real quick: are you currently working at all?",
+        alt: "",
+        note: "Veteran status and VA disability do NOT disqualify. Continue intake."
+      },
+      {
+        id: "dq-rules",
+        category: "Quick Disqualifiers",
+        catClass: "cat-dq",
+        title: "Under 50 / Over 65 / Not a U.S. Citizen",
+        sub: "Immediate polite disqualification",
+        triggers: "Caller is under 50, over 65, or states they are not a U.S. citizen.",
+        say: "Unfortunately, based on our current program guidelines, we’re unable to proceed with your request at this time. I appreciate you taking the time to speak with me, and I hope you have a great rest of your day.",
+        alt: "",
+        note: "End the call politely."
+      }
+    ];
+
+    const QUESTION_IDS = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"];
+    const INLINE_OUTRO_HTML = `
+      <div class="inline-nq-outro">
+        <div class="inline-nq-header">
+          <span>Approved NQ Outro — Read &amp; End Call Politely</span>
+        </div>
+        <p class="spoken-text">
+          “Unfortunately, based on the information you provided, we are unable to proceed with your request at this time. If there are any updates, we will let you know, okay?”
+        </p>
+      </div>
+    `;
+
+    let activeObjectionId = null;
+    let forcedClosureState = false;
+
+    function renderObjections(filterText = "") {
+      const container = document.getElementById("objectionsList");
+      const query = filterText.trim().toLowerCase();
+
+      const filtered = REBUTTALS.filter(item =>
+        item.title.toLowerCase().includes(query) ||
+        item.sub.toLowerCase().includes(query) ||
+        item.triggers.toLowerCase().includes(query) ||
+        item.say.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-soft); font-size:14px; padding:12px 0;">No matching objection found. Try keywords like <em>scam, lawyer, working, VA, cost, busy</em>.</p>`;
+        return;
+      }
+
+      const categories = [...new Set(filtered.map(i => i.category))];
+      let html = "";
+
+      categories.forEach(cat => {
+        const itemsInCat = filtered.filter(i => i.category === cat);
+        const catClass = itemsInCat[0].catClass;
+        html += `
+          <div class="category-group ${catClass}">
+            <div class="category-header">
+              <span class="cat-dot"></span>
+              <span>${cat}</span>
+            </div>
+            <div class="objection-grid">
+        `;
+        itemsInCat.forEach(item => {
+          const isActive = item.id === activeObjectionId ? "active" : "";
+          html += `
+            <button class="obj-btn ${isActive}" onclick="openRebuttal('${item.id}')">
+              <span class="obj-btn-title">${item.title}</span>
+              <span class="obj-btn-sub">${item.sub}</span>
+            </button>
+          `;
+        });
+        html += `</div></div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openRebuttal(id) {
+      if (activeObjectionId === id) {
+        closeRebuttal();
+        return;
+      }
+
+      const item = REBUTTALS.find(r => r.id === id);
+      if (!item) return;
+
+      activeObjectionId = id;
+      document.getElementById("popupTitle").textContent = item.title;
+      document.getElementById("popupTriggers").textContent = "Common phrases: " + item.triggers;
+      document.getElementById("popupSay").textContent = item.say;
+
+      const altEl = document.getElementById("popupAlt");
+      if (item.alt) {
+        altEl.innerHTML = item.alt;
+        altEl.classList.remove("hidden");
+      } else {
+        altEl.classList.add("hidden");
+      }
+
+      const noteEl = document.getElementById("popupNote");
+      if (item.note) {
+        noteEl.innerHTML = `<strong>Agent Note:</strong> ${item.note}`;
+        noteEl.classList.remove("hidden");
+      } else {
+        noteEl.classList.add("hidden");
+      }
+
+      const popup = document.getElementById("rebuttalPopup");
+      popup.classList.add("visible");
+      popup.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function closeRebuttal() {
+      activeObjectionId = null;
+      document.getElementById("rebuttalPopup").classList.remove("visible");
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function filterObjections() {
+      renderObjections(document.getElementById("searchInput").value);
+    }
+
+    function switchScriptMode(mode) {
+      const outCard = document.getElementById("introOutbound");
+      const cbCard = document.getElementById("introCallback");
+      const tabOut = document.getElementById("tabOutbound");
+      const tabCb = document.getElementById("tabCallback");
+
+      if (mode === "outbound") {
+        outCard.classList.remove("hidden");
+        cbCard.classList.add("hidden");
+        tabOut.classList.add("active");
+        tabCb.classList.remove("active");
+      } else {
+        outCard.classList.add("hidden");
+        cbCard.classList.remove("hidden");
+        tabOut.classList.remove("active");
+        tabCb.classList.add("active");
+      }
+      document.getElementById("scriptContainer").scrollTop = 0;
+    }
+
+    function toggleStatus(cardId, clickedStatus) {
+      const card = document.getElementById(cardId);
+      const currentStatus = card.dataset.status;
+      forcedClosureState = false;
+
+      const newStatus = currentStatus === clickedStatus ? "" : clickedStatus;
+      card.dataset.status = newStatus;
+
+      card.classList.remove("status-q", "status-nq");
+      card.querySelector(".btn-q").classList.remove("selected");
+      card.querySelector(".btn-nq").classList.remove("selected");
+
+      const outroSlot = card.querySelector(".inline-outro-slot");
+      outroSlot.innerHTML = "";
+
+      if (newStatus === "q") {
+        card.classList.add("status-q");
+        card.querySelector(".btn-q").classList.add("selected");
+      } else if (newStatus === "nq") {
+        card.classList.add("status-nq");
+        card.querySelector(".btn-nq").classList.add("selected");
+        // Show the Approved NQ Outro directly underneath this exact question
+        outroSlot.innerHTML = INLINE_OUTRO_HTML;
+      }
+
+      updateProgressAndClosure();
+    }
+
+    function updateProgressAndClosure() {
+      let qCount = 0;
+      let nqCount = 0;
+
+      QUESTION_IDS.forEach(id => {
+        const st = document.getElementById(id).dataset.status;
+        if (st === "q") qCount++;
+        if (st === "nq") nqCount++;
+      });
+
+      const pill = document.getElementById("progressPill");
+      const placeholder = document.getElementById("closurePlaceholder");
+      const closureBox = document.getElementById("closureBox");
+
+      pill.classList.remove("all-q", "has-nq");
+      if (nqCount > 0) {
+        pill.textContent = `Disqualified (${nqCount} NQ)`;
+        pill.classList.add("has-nq");
+      } else if (qCount === 8) {
+        pill.textContent = "8 / 8 Qualified!";
+        pill.classList.add("all-q");
+      } else {
+        pill.textContent = `${qCount} / 8 Answered`;
+      }
+
+      // Show Qualified Closure directly beneath Q8 when all 8 are Q (and 0 NQ)
+      if ((qCount === 8 && nqCount === 0) || forcedClosureState) {
+        placeholder.classList.add("hidden");
+        closureBox.classList.remove("hidden");
+        if (qCount === 8) {
+          closureBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      } else {
+        closureBox.classList.add("hidden");
+        placeholder.classList.remove("hidden");
+      }
+    }
+
+    function forceClosure(show) {
+      forcedClosureState = show;
+      updateProgressAndClosure();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn = document.getElementById("themeToggleBtn");
+      const isDark = html.getAttribute("data-theme") === "dark";
+
+      if (isDark) {
+        html.setAttribute("data-theme", "light");
+        btn.textContent = "🌙 Dark Mode";
+        localStorage.setItem("forge_theme", "light");
+      } else {
+        html.setAttribute("data-theme", "dark");
+        btn.textContent = "☀️ Light Mode";
+        localStorage.setItem("forge_theme", "dark");
+      }
+    }
+
+    function updatePlaceholders(saveAgent = false) {
+      const agentInput = document.getElementById("agentNameInput").value.trim();
+      if (saveAgent) {
+        localStorage.setItem("ssdi_agent_name", agentInput);
+      }
+
+      const agent = agentInput || "[Agent Name]";
+      const cx = document.getElementById("cxNameInput").value.trim() || "[CX Name]";
+
+      document.querySelectorAll(".agent-name").forEach(el => el.textContent = agent);
+      document.querySelectorAll(".cx-name").forEach(el => el.textContent = cx);
+    }
+
+    function resetCall() {
+      document.getElementById("cxNameInput").value = "";
+      updatePlaceholders(false);
+
+      QUESTION_IDS.forEach(id => {
+        const card = document.getElementById(id);
+        card.dataset.status = "";
+        card.classList.remove("status-q", "status-nq");
+        card.querySelector(".btn-q").classList.remove("selected");
+        card.querySelector(".btn-nq").classList.remove("selected");
+        card.querySelector(".inline-outro-slot").innerHTML = "";
+      });
+
+      forcedClosureState = false;
+      updateProgressAndClosure();
+      closeRebuttal();
+      document.getElementById("searchInput").value = "";
+      renderObjections();
+      document.getElementById("scriptContainer").scrollTop = 0;
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeRebuttal();
+    });
+
+    // Restore saved agent name & theme
+    const savedAgent = localStorage.getItem("ssdi_agent_name");
+    if (savedAgent) {
+      document.getElementById("agentNameInput").value = savedAgent;
+      updatePlaceholders(false);
+    }
+
+    const savedTheme = localStorage.getItem("forge_theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.getElementById("themeToggleBtn").textContent = "🌙 Dark Mode";
+    }
+
+    renderObjections();
+    updateProgressAndClosure();
+  </script>
+</body>
+</html>
