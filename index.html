@@ -1,26 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SSDI Agent Call Script & Rebuttal Hub</title>
+  <title>Forge Outreach — SSDI Call Script</title>
   <style>
     :root {
+      /* Dark Mode Default (Forge Outreach Slate & Ember) */
+      --bg: #0b1120;
+      --header-bg: #060a14;
+      --surface: #111827;
+      --surface-soft: #1e293b;
+      --surface-hover: #263349;
+      --border: #1f2937;
+      --border-strong: #334155;
+      --text: #f8fafc;
+      --text-soft: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --brand-accent: #f97316;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.11);
+      --green-border: rgba(34, 197, 94, 0.45);
+      --red: #f87171;
+      --red-solid: #dc2626;
+      --red-bg: rgba(239, 68, 68, 0.12);
+      --red-border: rgba(239, 68, 68, 0.5);
+      --amber: #fbbf24;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --amber-border: rgba(245, 158, 11, 0.4);
+      --var-bg: rgba(59, 130, 246, 0.22);
+      --var-text: #93c5fd;
+    }
+
+    [data-theme="light"] {
       --bg: #f1f5f9;
+      --header-bg: #0f172a;
       --surface: #ffffff;
-      --border: #cbd5e1;
+      --surface-soft: #f8fafc;
+      --surface-hover: #eff6ff;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
       --text: #0f172a;
-      --muted: #475569;
+      --text-soft: #475569;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --primary-soft: #eff6ff;
-      --green: #16a34a;
-      --green-soft: #dcfce7;
-      --red: #dc2626;
-      --red-soft: #fee2e2;
-      --amber: #b45309;
-      --amber-bg: #fef3c7;
-      --amber-border: #f59e0b;
+      --brand-accent: #ea580c;
+      --green: #15803d;
+      --green-bg: #f0fdf4;
+      --green-border: #86efac;
+      --red: #b91c1c;
+      --red-solid: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fca5a5;
+      --amber: #92400e;
+      --amber-bg: #fffbeb;
+      --amber-border: #fcd34d;
+      --var-bg: #dbeafe;
+      --var-text: #1e40af;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,18 +72,22 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s, color 0.2s;
     }
 
-    /* Top Bar */
+    /* Header */
     header {
-      background: #0f172a;
+      background: var(--header-bg);
       color: #fff;
-      padding: 12px 20px;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
+      border-bottom: 1px solid #1e293b;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     .brand {
@@ -53,26 +96,42 @@
       gap: 10px;
     }
 
-    .brand h1 {
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      white-space: nowrap;
     }
 
-    .badge {
-      background: #1e293b;
-      color: #38bdf8;
-      font-size: 11px;
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: var(--brand-accent);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .brand-divider {
+      color: #475569;
+      font-weight: 400;
+    }
+
+    .brand-sub {
+      color: #cbd5e1;
       font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid #334155;
+      font-size: 14px;
     }
 
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .input-sm {
@@ -80,86 +139,169 @@
       border: 1px solid #334155;
       color: #fff;
       padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      width: 150px;
+      border-radius: 7px;
+      font-size: 12.5px;
+      width: 140px;
+    }
+
+    .input-sm:focus {
+      outline: none;
+      border-color: var(--brand-accent);
     }
 
     .input-sm::placeholder { color: #94a3b8; }
 
+    .btn-theme {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 6px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-theme:hover { background: #334155; }
+
     .btn-reset {
-      background: #334155;
+      background: var(--brand-accent);
       color: #fff;
       border: none;
       padding: 7px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
+      border-radius: 7px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .btn-reset:hover { opacity: 0.9; }
+
+    /* Compact View Switcher (shown on narrow / half-screen windows) */
+    .compact-switcher {
+      display: none;
+      background: var(--surface-soft);
+      border-bottom: 1px solid var(--border-strong);
+      padding: 6px 12px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .compact-btn {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-soft);
+      font-size: 12.5px;
+      font-weight: 700;
       cursor: pointer;
     }
-    .btn-reset:hover { background: #475569; }
 
-    /* Main Split Workspace */
+    .compact-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Split Workspace */
     .workspace {
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 16px;
-      padding: 16px;
-      height: calc(100vh - 56px);
+      grid-template-columns: 1.22fr 1.08fr;
+      gap: 18px;
+      padding: 16px 20px;
+      flex: 1;
+      min-height: 0;
+      max-width: 1680px;
+      width: 100%;
+      margin: 0 auto;
       overflow: hidden;
     }
 
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
+      min-height: 0;
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
 
     .panel-header {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
-      background: #f8fafc;
+      background: var(--surface-soft);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
       flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .panel-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .panel-title {
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 12.5px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #334155;
+      letter-spacing: 0.6px;
+      color: var(--text-soft);
+    }
+
+    .progress-pill {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--border);
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .progress-pill.all-q {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+    .progress-pill.has-nq {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
     }
 
     .panel-body {
-      padding: 16px;
+      padding: 18px;
       overflow-y: auto;
       flex: 1;
+      min-height: 0;
       scroll-behavior: smooth;
     }
 
-    /* Tabs on Left Panel */
+    /* Tabs */
     .tabs {
       display: flex;
       gap: 6px;
     }
 
     .tab-btn {
-      padding: 5px 10px;
+      padding: 5px 11px;
       font-size: 12px;
       font-weight: 600;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--muted);
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text-soft);
       cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
     }
 
     .tab-btn.active {
@@ -170,21 +312,28 @@
 
     /* Script Cards */
     .script-card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 16px 18px;
       margin-bottom: 14px;
-      transition: all 0.15s ease;
+      transition: all 0.16s ease;
+    }
+
+    .script-card:hover {
+      border-color: #475569;
     }
 
     .script-card.status-q {
-      border-left: 5px solid var(--green);
-      background: #f0fdf4;
+      border-color: var(--green-border);
+      border-left: 6px solid var(--green);
+      background: var(--green-bg);
     }
 
     .script-card.status-nq {
-      border-left: 5px solid var(--red);
-      background: #fef2f2;
+      border-color: var(--red-border);
+      border-left: 6px solid var(--red-solid);
+      background: var(--red-bg);
     }
 
     .step-top {
@@ -199,31 +348,31 @@
       font-weight: 800;
       text-transform: uppercase;
       color: var(--primary);
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
     }
 
     .spoken-text {
-      font-size: 16px;
-      line-height: 1.55;
+      font-size: 17px;
+      line-height: 1.58;
       color: var(--text);
       font-weight: 500;
     }
 
     .highlight-var {
-      background: #e0e7ff;
-      color: #1e3a8a;
-      padding: 1px 6px;
-      border-radius: 4px;
+      background: var(--var-bg);
+      color: var(--var-text);
+      padding: 2px 7px;
+      border-radius: 6px;
       font-weight: 700;
     }
 
     .agent-note {
-      margin-top: 10px;
+      margin-top: 11px;
       background: var(--amber-bg);
-      border-left: 3px solid var(--amber-border);
+      border: 1px solid var(--amber-border);
       color: var(--amber);
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 9px 13px;
+      border-radius: 8px;
       font-size: 13px;
       line-height: 1.45;
     }
@@ -232,103 +381,193 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed #cbd5e1;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid var(--border-strong);
       font-size: 12px;
-      color: var(--muted);
+      color: var(--text-soft);
     }
 
     .q-btns {
       display: flex;
-      gap: 6px;
+      gap: 8px;
     }
 
     .btn-q, .btn-nq {
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
-      border: 1px solid transparent;
+      transition: all 0.12s ease;
+      user-select: none;
     }
 
     .btn-q {
-      background: var(--green-soft);
+      background: transparent;
       color: var(--green);
-      border-color: #86efac;
+      border: 1.5px solid var(--green-border);
     }
-    .btn-q.selected, .btn-q:hover {
-      background: var(--green);
+    .btn-q:hover { background: var(--green-bg); }
+    .btn-q.selected {
+      background: #16a34a;
       color: #fff;
+      border-color: #16a34a;
     }
 
     .btn-nq {
-      background: var(--red-soft);
+      background: transparent;
       color: var(--red);
-      border-color: #fca5a5;
+      border: 1.5px solid var(--red-border);
     }
-    .btn-nq.selected, .btn-nq:hover {
-      background: var(--red);
+    .btn-nq:hover { background: var(--red-bg); }
+    .btn-nq.selected {
+      background: var(--red-solid);
       color: #fff;
+      border-color: var(--red-solid);
     }
 
+    /* Inline NQ Outro Box */
+    .inline-nq-outro {
+      margin-top: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 2px solid var(--red-solid);
+      border-radius: 10px;
+      animation: popIn 0.16s ease-out;
+    }
+
+    .inline-nq-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--red);
+    }
+
+    /* Closure Box directly beneath Q8 */
     .closure-box {
-      background: #eff6ff;
-      border: 2px solid #93c5fd;
+      background: var(--primary-soft);
+      border: 2px solid var(--primary);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+      animation: popIn 0.18s ease-out;
     }
 
-    .outro-box {
-      background: #fff1f2;
-      border: 2px solid #fda4af;
+    .outcome-placeholder {
+      text-align: center;
+      padding: 14px;
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      color: var(--text-soft);
+      font-size: 13px;
+      background: var(--surface-soft);
     }
 
-    /* Right Panel: Objection Buttons */
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Right Panel: Organized Rebuttals */
     .search-box {
       width: 100%;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 10px;
       font-size: 14px;
       margin-bottom: 12px;
+      background: var(--surface-soft);
+      color: var(--text);
     }
+    .search-box::placeholder { color: var(--text-soft); }
     .search-box:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
-    .category-label {
-      font-size: 11px;
+    .category-group {
+      margin-bottom: 16px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
       font-weight: 800;
       text-transform: uppercase;
-      color: var(--muted);
-      letter-spacing: 0.6px;
-      margin: 12px 0 8px;
+      letter-spacing: 0.7px;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
     }
+
+    .cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .cat-trust .cat-dot { background: #38bdf8; }
+    .cat-trust .category-header { color: #38bdf8; }
+    .cat-trust .obj-btn { border-left: 4px solid #38bdf8; }
+
+    .cat-brush .cat-dot { background: #fbbf24; }
+    .cat-brush .category-header { color: #fbbf24; }
+    .cat-brush .obj-btn { border-left: 4px solid #fbbf24; }
+
+    .cat-claims .cat-dot { background: #c084fc; }
+    .cat-claims .category-header { color: #c084fc; }
+    .cat-claims .obj-btn { border-left: 4px solid #c084fc; }
+
+    .cat-benefits .cat-dot { background: #34d399; }
+    .cat-benefits .category-header { color: #34d399; }
+    .cat-benefits .obj-btn { border-left: 4px solid #34d399; }
+
+    .cat-dq .cat-dot { background: #f87171; }
+    .cat-dq .category-header { color: #f87171; }
+    .cat-dq .obj-btn { border-left: 4px solid #f87171; }
+
+    [data-theme="light"] .cat-trust .category-header { color: #0284c7; }
+    [data-theme="light"] .cat-brush .category-header { color: #d97706; }
+    [data-theme="light"] .cat-claims .category-header { color: #7e22ce; }
+    [data-theme="light"] .cat-benefits .category-header { color: #059669; }
+    [data-theme="light"] .cat-dq .category-header { color: #dc2626; }
 
     .objection-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 9px;
     }
 
     .obj-btn {
       text-align: left;
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 11px 13px;
       cursor: pointer;
-      transition: all 0.12s ease;
+      transition: all 0.14s ease;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
 
     .obj-btn:hover {
-      background: var(--primary-soft);
-      border-color: var(--primary);
+      background: var(--surface-hover);
       transform: translateY(-1px);
     }
 
@@ -336,37 +575,38 @@
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
     }
 
     .obj-btn-title {
-      font-size: 13px;
+      font-size: 14.5px;
       font-weight: 700;
+      line-height: 1.28;
+      color: var(--text);
     }
 
     .obj-btn-sub {
-      font-size: 11px;
-      color: var(--muted);
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.3;
     }
 
-    .obj-btn.active .obj-btn-sub {
-      color: #dbeafe;
-    }
+    .obj-btn.active .obj-btn-title { color: #fff; }
+    .obj-btn.active .obj-btn-sub { color: #dbeafe; }
 
-    /* Rebuttal Pop-up / Spotlight Drawer */
+    /* Rebuttal Spotlight Box */
     .rebuttal-popup {
       display: none;
-      background: #ffffff;
+      background: var(--surface-soft);
       border: 2px solid var(--primary);
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 14px;
-      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.18);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
       animation: popIn 0.15s ease-out;
     }
 
-    .rebuttal-popup.visible {
-      display: block;
-    }
+    .rebuttal-popup.visible { display: block; }
 
     @keyframes popIn {
       from { opacity: 0; transform: translateY(-6px); }
@@ -378,61 +618,79 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .popup-title {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--primary);
     }
 
     .popup-triggers {
-      font-size: 12px;
-      color: var(--muted);
+      font-size: 12.5px;
+      color: var(--text-soft);
       font-style: italic;
       margin-bottom: 10px;
     }
 
     .popup-close {
-      background: #e2e8f0;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 9px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 7px;
+      padding: 5px 10px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      color: #334155;
+      color: var(--text);
     }
-    .popup-close:hover { background: #cbd5e1; }
+    .popup-close:hover { background: var(--surface-hover); }
 
     .popup-say {
-      font-size: 16px;
-      line-height: 1.55;
-      color: #0f172a;
-      background: #f8fafc;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      font-size: 17.5px;
+      line-height: 1.58;
+      color: var(--text);
+      background: var(--surface);
+      padding: 13px 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
       font-weight: 500;
     }
 
     .popup-alt {
-      margin-top: 8px;
-      font-size: 14px;
+      margin-top: 9px;
+      font-size: 14.5px;
       line-height: 1.5;
-      color: #1e293b;
-      padding: 10px 12px;
-      background: #f1f5f9;
+      color: var(--text);
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px dashed var(--border-strong);
       border-radius: 8px;
     }
 
     .hidden { display: none !important; }
 
-    @media (max-width: 900px) {
-      body { height: auto; overflow: auto; }
-      .workspace { grid-template-columns: 1fr; height: auto; }
-      .objection-grid { grid-template-columns: 1fr; }
+    /* Half-Screen / Minimized Multitasking Mode */
+    @media (max-width: 1180px) {
+      .input-sm { width: 115px; }
+      .workspace {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+      .panel-body { padding: 12px; }
+      .script-card { padding: 12px 14px; margin-bottom: 10px; }
+      .spoken-text, .popup-say { font-size: 15.5px; line-height: 1.5; }
+      .objection-grid { grid-template-columns: 1fr; gap: 7px; }
+      .obj-btn { padding: 9px 11px; }
+      .obj-btn-title { font-size: 13.5px; }
+    }
+
+    /* Ultra-Narrow / Tiny Window Fallback */
+    @media (max-width: 720px) {
+      .compact-switcher { display: flex; }
+      .workspace { grid-template-columns: 1fr; }
+      .panel.mobile-hidden { display: none; }
     }
   </style>
 </head>
@@ -440,25 +698,37 @@
 
   <header>
     <div class="brand">
-      <h1>SSDI Live Call Script</h1>
-      <span class="badge">The National Disability</span>
+      <div class="brand-logo">
+        <span class="brand-dot"></span>
+        <span>Forge Outreach</span>
+        <span class="brand-divider">|</span>
+        <span class="brand-sub">SSDI Call Script</span>
+      </div>
     </div>
     <div class="header-controls">
-      <input type="text" id="agentNameInput" class="input-sm" placeholder="Your Agent Name" oninput="updatePlaceholders()" />
-      <input type="text" id="cxNameInput" class="input-sm" placeholder="Customer Name" oninput="updatePlaceholders()" />
-      <button class="btn-reset" onclick="resetCall()">New Call / Reset</button>
+      <input type="text" id="agentNameInput" class="input-sm" placeholder="Agent Name" oninput="updatePlaceholders(true)" />
+      <input type="text" id="cxNameInput" class="input-sm" placeholder="CX Name" oninput="updatePlaceholders(false)" />
+      <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()">☀️ Light</button>
+      <button class="btn-reset" onclick="resetCall()">New Call</button>
     </div>
   </header>
 
+  <div class="compact-switcher" id="compactSwitcher">
+    <button class="compact-btn active" id="compactScriptBtn" onclick="setCompactPane('script')">📄 Main Script</button>
+    <button class="compact-btn" id="compactObjBtn" onclick="setCompactPane('objections')">⚡ Rebuttals</button>
+  </div>
+
   <main class="workspace">
-    <!-- LEFT PANEL: MAIN CALL SCRIPT (WORD-FOR-WORD) -->
-    <section class="panel">
+    <!-- LEFT PANEL: MAIN SCRIPT -->
+    <section class="panel" id="scriptPanel">
       <div class="panel-header">
-        <span class="panel-title">Main Script</span>
+        <div class="panel-title-group">
+          <span class="panel-title">Main Script</span>
+          <span class="progress-pill" id="progressPill">0 / 8</span>
+        </div>
         <div class="tabs">
-          <button class="tab-btn active" id="tabOutbound" onclick="switchScriptMode('outbound')">Outbound Script</button>
-          <button class="tab-btn" id="tabCallback" onclick="switchScriptMode('callback')">Missed-Call Opener</button>
-          <button class="tab-btn" id="tabOutro" onclick="jumpTo('approved-outro')">Jump to NQ Outro</button>
+          <button class="tab-btn active" id="tabOutbound" onclick="switchScriptMode('outbound')">Outbound</button>
+          <button class="tab-btn" id="tabCallback" onclick="switchScriptMode('callback')">Missed-Call</button>
         </div>
       </div>
 
@@ -494,7 +764,7 @@
         </div>
 
         <!-- QUESTION 1 -->
-        <div class="script-card" id="q1">
+        <div class="script-card" id="q1" data-status="">
           <div class="step-top">
             <span class="step-label">1st Question</span>
           </div>
@@ -505,16 +775,17 @@
             <strong>Note:</strong> Must be completely out of work. Even part-time work counts as working.
           </div>
           <div class="q-controls">
-            <span><strong>IF YES = Q</strong> &nbsp;|&nbsp; <strong>IF NO = NQ</strong></span>
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q1', 'q', this)">Q (Yes)</button>
-              <button class="btn-nq" onclick="markStatus('q1', 'nq', this)">NQ (No)</button>
+              <button class="btn-q" onclick="toggleStatus('q1', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q1', 'nq')">NQ (No)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 2 -->
-        <div class="script-card" id="q2">
+        <div class="script-card" id="q2" data-status="">
           <div class="step-top">
             <span class="step-label">2nd Question</span>
           </div>
@@ -525,16 +796,17 @@
             <strong>Note:</strong> Must be out of work because of a medical condition for 5 continuous months or more.
           </div>
           <div class="q-controls">
-            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO or &lt; 5 mos = NQ</strong></span>
+            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO / &lt;5m = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q2', 'q', this)">Q (Yes)</button>
-              <button class="btn-nq" onclick="markStatus('q2', 'nq', this)">NQ (No)</button>
+              <button class="btn-q" onclick="toggleStatus('q2', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q2', 'nq')">NQ (No)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 3 -->
-        <div class="script-card" id="q3">
+        <div class="script-card" id="q3" data-status="">
           <div class="step-top">
             <span class="step-label">3rd Question</span>
           </div>
@@ -542,16 +814,17 @@
             Just to confirm that your age is between 50 and 65, correct?
           </p>
           <div class="q-controls">
-            <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>Under 50 or over 65 = NQ</strong></span>
+            <span><strong>50–65 = Q</strong> &nbsp;|&nbsp; <strong>&lt;50 / &gt;65 = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q3', 'q', this)">Q (50–65)</button>
-              <button class="btn-nq" onclick="markStatus('q3', 'nq', this)">NQ (&lt;50 / &gt;65)</button>
+              <button class="btn-q" onclick="toggleStatus('q3', 'q')">Q (50–65)</button>
+              <button class="btn-nq" onclick="toggleStatus('q3', 'nq')">NQ (Out)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 4 -->
-        <div class="script-card" id="q4">
+        <div class="script-card" id="q4" data-status="">
           <div class="step-top">
             <span class="step-label">4th Question</span>
           </div>
@@ -562,16 +835,17 @@
             <strong>Note:</strong> California (CA) and Colorado (CO) are bad states.
           </div>
           <div class="q-controls">
-            <span><strong>ANY OTHER STATE = Q</strong> &nbsp;|&nbsp; <strong>CA or CO = NQ</strong></span>
+            <span><strong>OTHER = Q</strong> &nbsp;|&nbsp; <strong>CA / CO = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q4', 'q', this)">Q (Good State)</button>
-              <button class="btn-nq" onclick="markStatus('q4', 'nq', this)">NQ (CA / CO)</button>
+              <button class="btn-q" onclick="toggleStatus('q4', 'q')">Q (Good)</button>
+              <button class="btn-nq" onclick="toggleStatus('q4', 'nq')">NQ (CA/CO)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 5 -->
-        <div class="script-card" id="q5">
+        <div class="script-card" id="q5" data-status="">
           <div class="step-top">
             <span class="step-label">5th Question</span>
           </div>
@@ -585,14 +859,15 @@
           <div class="q-controls">
             <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q5', 'q', this)">Q (Yes)</button>
-              <button class="btn-nq" onclick="markStatus('q5', 'nq', this)">NQ (No)</button>
+              <button class="btn-q" onclick="toggleStatus('q5', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q5', 'nq')">NQ (No)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 6 -->
-        <div class="script-card" id="q6">
+        <div class="script-card" id="q6" data-status="">
           <div class="step-top">
             <span class="step-label">6th Question</span>
           </div>
@@ -605,14 +880,15 @@
           <div class="q-controls">
             <span><strong>YES = Q</strong> &nbsp;|&nbsp; <strong>NO = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q6', 'q', this)">Q (Yes)</button>
-              <button class="btn-nq" onclick="markStatus('q6', 'nq', this)">NQ (No)</button>
+              <button class="btn-q" onclick="toggleStatus('q6', 'q')">Q (Yes)</button>
+              <button class="btn-nq" onclick="toggleStatus('q6', 'nq')">NQ (No)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 7 -->
-        <div class="script-card" id="q7">
+        <div class="script-card" id="q7" data-status="">
           <div class="step-top">
             <span class="step-label">7th Question</span>
           </div>
@@ -623,16 +899,17 @@
             <strong>Note:</strong> Active substance abuse that contributes to the disability is a disqualifier.
           </div>
           <div class="q-controls">
-            <span><strong>NOT RELATED = Q</strong> &nbsp;|&nbsp; <strong>RELATED / ACTIVE USE = NQ</strong></span>
+            <span><strong>NOT RELATED = Q</strong> &nbsp;|&nbsp; <strong>RELATED = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q7', 'q', this)">Q (Not Related)</button>
-              <button class="btn-nq" onclick="markStatus('q7', 'nq', this)">NQ (Related)</button>
+              <button class="btn-q" onclick="toggleStatus('q7', 'q')">Q (No)</button>
+              <button class="btn-nq" onclick="toggleStatus('q7', 'nq')">NQ (Yes)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
         <!-- QUESTION 8 -->
-        <div class="script-card" id="q8">
+        <div class="script-card" id="q8" data-status="">
           <div class="step-top">
             <span class="step-label">8th Question</span>
           </div>
@@ -643,58 +920,56 @@
             <strong>Note:</strong> We are referring to any appointed attorney or representative on the SSDI claim, current or previous.
           </div>
           <div class="q-controls">
-            <span><strong>NO ATTORNEY = Q</strong> &nbsp;|&nbsp; <strong>HAS OR HAD AN ATTORNEY = NQ</strong></span>
+            <span><strong>NO ATTORNEY = Q</strong> &nbsp;|&nbsp; <strong>HAS/HAD = NQ</strong></span>
             <div class="q-btns">
-              <button class="btn-q" onclick="markStatus('q8', 'q', this)">Q (No Attorney)</button>
-              <button class="btn-nq" onclick="markStatus('q8', 'nq', this)">NQ (Has/Had)</button>
+              <button class="btn-q" onclick="toggleStatus('q8', 'q')">Q (None)</button>
+              <button class="btn-nq" onclick="toggleStatus('q8', 'nq')">NQ (Yes)</button>
             </div>
           </div>
+          <div class="inline-outro-slot"></div>
         </div>
 
-        <!-- CLOSURE & HAND-OFF -->
-        <div class="script-card closure-box" id="closure">
-          <div class="step-top">
-            <span class="step-label">Closure (All Q)</span>
+        <!-- QUALIFIED CLOSURE DIRECTLY UNDER QUESTION 8 -->
+        <div id="closureArea">
+          <div class="outcome-placeholder" id="closurePlaceholder">
+            Mark all 8 questions <strong>Q</strong> above to unlock the <strong>Qualified Closure &amp; Warm Hand-Off</strong> right here.
+            <div style="margin-top: 6px;">
+              <button class="link-btn" onclick="forceClosure(true)">Preview Closure</button>
+            </div>
           </div>
-          <p class="spoken-text">
-            Sounds perfect. I have good news for you here. You have a strong case to receive your disability benefits, which can reach up to $3,000 a month. I’ll connect both of us now to the licensed agent to complete your free evaluation. You might hear 10 automated quick questions about your work and medical history or get the agent directly; both are normal. I’ll stay with you till we’re connected. Sounds good?
-          </p>
-          <hr style="margin: 12px 0; border: 0; border-top: 1px solid #bfdbfe;" />
-          <div class="step-top">
-            <span class="step-label">Hand-Off</span>
-          </div>
-          <p class="spoken-text">
-            This is <span class="highlight-var agent-name">[Agent Name]</span>. I have with me <span class="highlight-var cx-name">[Customer Name]</span>. He/she is interested in receiving SSDI. You got it from here? <span class="highlight-var cx-name">[Customer Name]</span>, can you say hello?
-          </p>
-          <div class="agent-note">
-            <strong>Note:</strong> [ Always do a warm hand-off.]
-          </div>
-        </div>
 
-        <!-- APPROVED NQ OUTRO -->
-        <div class="script-card outro-box" id="approved-outro">
-          <div class="step-top">
-            <span class="step-label" style="color: var(--red);">Approved NQ Outro</span>
-          </div>
-          <p class="spoken-text">
-            “Unfortunately, based on the information you provided, we are unable to proceed with your request at this time. If there are any updates, we will let you know, okay?”
-          </p>
-          <div class="agent-note">
-            <strong>Note:</strong> For any NQ, use this approved outro and end the call politely.
+          <div class="script-card closure-box hidden" id="closureBox">
+            <div class="step-top">
+              <span class="step-label">Qualified Closure (All 8 Q)</span>
+              <button class="link-btn" onclick="forceClosure(false)">Hide</button>
+            </div>
+            <p class="spoken-text">
+              Sounds perfect. I have good news for you here. You have a strong case to receive your disability benefits, which can reach up to $3,000 a month. I’ll connect both of us now to the licensed agent to complete your free evaluation. You might hear 10 automated quick questions about your work and medical history or get the agent directly; both are normal. I’ll stay with you till we’re connected. Sounds good?
+            </p>
+            <hr style="margin: 12px 0; border: 0; border-top: 1px solid var(--border-strong);" />
+            <div class="step-top">
+              <span class="step-label">Hand-Off</span>
+            </div>
+            <p class="spoken-text">
+              This is <span class="highlight-var agent-name">[Agent Name]</span>. I have with me <span class="highlight-var cx-name">[Customer Name]</span>. He/she is interested in receiving SSDI. You got it from here? <span class="highlight-var cx-name">[Customer Name]</span>, can you say hello?
+            </p>
+            <div class="agent-note">
+              <strong>Note:</strong> [ Always do a warm hand-off.]
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT PANEL: OBJECTION BUTTONS & POP-UP REBUTTALS -->
-    <section class="panel">
+    <!-- RIGHT PANEL: OBJECTIONS & REBUTTALS -->
+    <section class="panel mobile-hidden" id="objectionsPanel">
       <div class="panel-header">
-        <span class="panel-title">Objections & Rebuttals</span>
-        <span style="font-size: 12px; color: var(--muted);">Click any objection (or press Esc to close)</span>
+        <span class="panel-title">Objections &amp; Rebuttals</span>
+        <span style="font-size: 11.5px; color: var(--text-soft);">Click to pop up (Esc to close)</span>
       </div>
 
       <div class="panel-body">
-        <!-- POP-UP REBUTTAL CARD -->
+        <!-- POP-UP REBUTTAL SPOTLIGHT -->
         <div class="rebuttal-popup" id="rebuttalPopup">
           <div class="popup-header">
             <div>
@@ -712,7 +987,7 @@
           type="text"
           id="searchInput"
           class="search-box"
-          placeholder="Type what the customer said (e.g., scam, lawyer, working, VA, cost)..."
+          placeholder="Search objection (scam, lawyer, working, VA, cost)..."
           oninput="filterObjections()"
         />
 
@@ -724,18 +999,9 @@
   <script>
     const REBUTTALS = [
       {
-        id: "not-interested",
-        category: "Brush-Offs & Gatekeepers",
-        title: "Not Interested / Take Me Off List",
-        sub: "\"I'm not interested\" / \"Stop calling me\"",
-        triggers: "\"I'm not interested,\" \"Take me off your list,\" \"Stop calling me.\"",
-        say: "Totally get it—I’ll keep this under 10 seconds. I’m not selling anything; we’re just following up on a disability benefits request to see if this even applies to you. You’re currently out of work due to a medical condition, right?",
-        alt: "<strong>Alternative:</strong> Fair enough! We’re not selling anything—just checking if you qualify for monthly disability benefits. Are you currently out of work because of a health condition?",
-        note: "If they firmly demand DNC (Do Not Call), apologize politely, mark DNC, and end the call immediately."
-      },
-      {
         id: "scam-who",
         category: "Trust & Privacy",
+        catClass: "cat-trust",
         title: "Is This a Scam? / Who Are You?",
         sub: "\"Who is this?\" / \"I don't give info on the phone\"",
         triggers: "\"Who are you?\" \"Is this a scam?\" \"I don't like giving out my info.\"",
@@ -746,6 +1012,7 @@
       {
         id: "got-number",
         category: "Trust & Privacy",
+        catClass: "cat-trust",
         title: "How Did You Get My Number?",
         sub: "\"How'd you get my info?\" / \"I didn't sign up\"",
         triggers: "\"How did you get my number?\" \"Where did you get my info?\"",
@@ -756,7 +1023,8 @@
       {
         id: "cost-catch",
         category: "Trust & Privacy",
-        title: "How Much Does This Cost? / What's the Catch?",
+        catClass: "cat-trust",
+        title: "How Much Does This Cost? / Catch?",
         sub: "\"Is this free?\" / \"I can't afford a lawyer\"",
         triggers: "\"How much does this cost?\" \"What's the catch?\" \"I can't afford anyone.\"",
         say: "Checking if you qualify is 100% free, and there are zero upfront costs. Let’s just make sure you meet the basic guidelines first—are you completely out of work right now?",
@@ -764,8 +1032,42 @@
         note: "Do not quote exact attorney contingency fees—let the licensed specialist explain that after transfer."
       },
       {
+        id: "what-condition",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "What Disability Do I Have? / Screen Info",
+        sub: "\"What does your screen say?\" / \"What condition?\"",
+        triggers: "\"What disability do I have?\" \"What do you see on your system?\"",
+        say: "For privacy reasons, our screen doesn’t show medical details—just that a request came in for a health condition keeping someone out of work. Is that the case for you right now?",
+        alt: "",
+        note: ""
+      },
+      {
+        id: "location",
+        category: "Trust & Privacy",
+        catClass: "cat-trust",
+        title: "Where Are You Located?",
+        sub: "\"Where are you calling from?\" / \"What state?\"",
+        triggers: "\"Where are you located?\" \"Where is your office?\"",
+        say: "We’re a remote team working across the U.S., so we help clients nationwide. Let’s run through these quick yes-or-no questions to see if you qualify—are you currently out of work?",
+        alt: "<strong>If they press for exact address:</strong> I’m sorry, I’m unable to share our exact office address for security and privacy reasons—appreciate your understanding! Are you currently out of work due to a medical condition?",
+        note: ""
+      },
+      {
+        id: "not-interested",
+        category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
+        title: "Not Interested / Take Me Off List",
+        sub: "\"I'm not interested\" / \"Stop calling me\"",
+        triggers: "\"I'm not interested,\" \"Take me off your list,\" \"Stop calling me.\"",
+        say: "Totally get it—I’ll keep this under 10 seconds. I’m not selling anything; we’re just following up on a disability benefits request to see if this even applies to you. You’re currently out of work due to a medical condition, right?",
+        alt: "<strong>Alternative:</strong> Fair enough! We’re not selling anything—just checking if you qualify for monthly disability benefits. Are you currently out of work because of a health condition?",
+        note: "If they firmly demand DNC (Do Not Call), apologize politely, mark DNC, and end the call immediately."
+      },
+      {
         id: "busy-callback",
         category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
         title: "I'm Busy / Call Me Back Later",
         sub: "\"I'm driving\" / \"At the doctor\" / \"Call later\"",
         triggers: "\"I'm busy right now,\" \"Call me back later,\" \"I'm at an appointment.\"",
@@ -776,6 +1078,7 @@
       {
         id: "wrong-number",
         category: "Brush-Offs & Gatekeepers",
+        catClass: "cat-brush",
         title: "Wrong Number",
         sub: "\"Wrong number\" / \"Nobody by that name\"",
         triggers: "\"You have the wrong number,\" \"Nobody by that name lives here.\"",
@@ -786,6 +1089,7 @@
       {
         id: "already-applied",
         category: "Claims & Eligibility",
+        catClass: "cat-claims",
         title: "Already Applied / Have a Lawyer",
         sub: "\"I already filed\" / \"Waiting on hearing\" / \"Got an attorney\"",
         triggers: "\"I already applied,\" \"I'm waiting on my appeal/hearing,\" \"I have a disability lawyer.\"",
@@ -796,6 +1100,7 @@
       {
         id: "denied-before",
         category: "Claims & Eligibility",
+        catClass: "cat-claims",
         title: "Denied Before / Don't Think I Qualify",
         sub: "\"They turned me down\" / \"I won't qualify\"",
         triggers: "\"I've been denied before,\" \"Social Security rejects everybody,\" \"I don't think I qualify.\"",
@@ -806,16 +1111,18 @@
       {
         id: "working-now",
         category: "Claims & Eligibility",
-        title: "I'm Working Right Now (Part-Time / Full-Time)",
+        catClass: "cat-claims",
+        title: "I'm Working Right Now (Part/Full-Time)",
         sub: "\"I work part-time\" / \"Just a few hours a week\"",
         triggers: "\"I'm working right now,\" \"I still work part-time,\" \"I only work a few hours.\"",
         say: "Gotcha. Because SSDI is strictly for people who are completely out of work due to a medical condition, even part-time work disqualifies a claim right now. Just to confirm, are you currently working at all?",
         alt: "",
-        note: "Still working (even part-time) = NQ. Use the Approved NQ Outro and end politely."
+        note: "Still working (even part-time) = NQ. Click NQ on Question 1 to pull up the Approved NQ Outro."
       },
       {
         id: "no-disability",
         category: "Claims & Eligibility",
+        catClass: "cat-claims",
         title: "No Disability / Never Applied",
         sub: "\"I'm not disabled\" / \"I never applied for SSDI\"",
         triggers: "\"I don't have a disability,\" \"I never applied for SSDI.\"",
@@ -826,6 +1133,7 @@
       {
         id: "other-benefits",
         category: "Other Benefits",
+        catClass: "cat-benefits",
         title: "On Medicare / Food Stamps / Widow's",
         sub: "\"I get Medicare\" / \"SNAP\" / \"Widow's benefits\"",
         triggers: "\"I'm already on Medicare,\" \"I get food stamps/SNAP,\" \"I draw widow's benefits.\"",
@@ -836,6 +1144,7 @@
       {
         id: "veteran-va",
         category: "Other Benefits",
+        catClass: "cat-benefits",
         title: "I'm a Veteran / Get VA Benefits",
         sub: "\"I get VA disability\" / \"100% P&T VA\"",
         triggers: "\"I'm a veteran,\" \"I already get VA disability benefits.\"",
@@ -844,28 +1153,9 @@
         note: "Veteran status and VA disability do NOT disqualify. Continue intake."
       },
       {
-        id: "what-condition",
-        category: "Trust & Privacy",
-        title: "What Disability Do I Have? / System Info",
-        sub: "\"What does your screen say?\" / \"What condition?\"",
-        triggers: "\"What disability do I have?\" \"What do you see on your system?\"",
-        say: "For privacy reasons, our screen doesn’t show medical details—just that a request came in for a health condition keeping someone out of work. Is that the case for you right now?",
-        alt: "",
-        note: ""
-      },
-      {
-        id: "location",
-        category: "Trust & Privacy",
-        title: "Where Are You Located?",
-        sub: "\"Where are you calling from?\" / \"What state?\"",
-        triggers: "\"Where are you located?\" \"Where is your office?\"",
-        say: "We’re a remote team working across the U.S., so we help clients nationwide. Let’s run through these quick yes-or-no questions to see if you qualify—are you currently out of work?",
-        alt: "<strong>If they press for exact address:</strong> I’m sorry, I’m unable to share our exact office address for security and privacy reasons—appreciate your understanding! Are you currently out of work due to a medical condition?",
-        note: ""
-      },
-      {
         id: "dq-rules",
         category: "Quick Disqualifiers",
+        catClass: "cat-dq",
         title: "Under 50 / Over 65 / Not a U.S. Citizen",
         sub: "Immediate polite disqualification",
         triggers: "Caller is under 50, over 65, or states they are not a U.S. citizen.",
@@ -875,7 +1165,20 @@
       }
     ];
 
+    const QUESTION_IDS = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"];
+    const INLINE_OUTRO_HTML = `
+      <div class="inline-nq-outro">
+        <div class="inline-nq-header">
+          <span>Approved NQ Outro — Read &amp; End Call Politely</span>
+        </div>
+        <p class="spoken-text">
+          “Unfortunately, based on the information you provided, we are unable to proceed with your request at this time. If there are any updates, we will let you know, okay?”
+        </p>
+      </div>
+    `;
+
     let activeObjectionId = null;
+    let forcedClosureState = false;
 
     function renderObjections(filterText = "") {
       const container = document.getElementById("objectionsList");
@@ -889,7 +1192,7 @@
       );
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p style="color:#64748b; font-size:13px; padding:12px 0;">No matching objection found. Try searching keywords like <em>scam, lawyer, working, VA, cost, busy</em>.</p>`;
+        container.innerHTML = `<p style="color:var(--text-soft); font-size:13.5px; padding:10px 0;">No matching objection found. Try <em>scam, lawyer, working, VA, cost, busy</em>.</p>`;
         return;
       }
 
@@ -897,8 +1200,17 @@
       let html = "";
 
       categories.forEach(cat => {
-        html += `<div class="category-label">${cat}</div><div class="objection-grid">`;
-        filtered.filter(i => i.category === cat).forEach(item => {
+        const itemsInCat = filtered.filter(i => i.category === cat);
+        const catClass = itemsInCat[0].catClass;
+        html += `
+          <div class="category-group ${catClass}">
+            <div class="category-header">
+              <span class="cat-dot"></span>
+              <span>${cat}</span>
+            </div>
+            <div class="objection-grid">
+        `;
+        itemsInCat.forEach(item => {
           const isActive = item.id === activeObjectionId ? "active" : "";
           html += `
             <button class="obj-btn ${isActive}" onclick="openRebuttal('${item.id}')">
@@ -907,13 +1219,18 @@
             </button>
           `;
         });
-        html += `</div>`;
+        html += `</div></div>`;
       });
 
       container.innerHTML = html;
     }
 
     function openRebuttal(id) {
+      if (activeObjectionId === id) {
+        closeRebuttal();
+        return;
+      }
+
       const item = REBUTTALS.find(r => r.id === id);
       if (!item) return;
 
@@ -974,26 +1291,117 @@
       document.getElementById("scriptContainer").scrollTop = 0;
     }
 
-    function jumpTo(elementId) {
-      const el = document.getElementById(elementId);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    function setCompactPane(pane) {
+      const scriptPanel = document.getElementById("scriptPanel");
+      const objPanel = document.getElementById("objectionsPanel");
+      const sBtn = document.getElementById("compactScriptBtn");
+      const oBtn = document.getElementById("compactObjBtn");
 
-    function markStatus(cardId, status, btnEl) {
-      const card = document.getElementById(cardId);
-      card.classList.remove("status-q", "status-nq");
-      card.querySelectorAll(".btn-q, .btn-nq").forEach(b => b.classList.remove("selected"));
-
-      card.classList.add(status === "q" ? "status-q" : "status-nq");
-      btnEl.classList.add("selected");
-
-      if (status === "nq") {
-        jumpTo("approved-outro");
+      if (pane === "script") {
+        scriptPanel.classList.remove("mobile-hidden");
+        objPanel.classList.add("mobile-hidden");
+        sBtn.classList.add("active");
+        oBtn.classList.remove("active");
+      } else {
+        objPanel.classList.remove("mobile-hidden");
+        scriptPanel.classList.add("mobile-hidden");
+        oBtn.classList.add("active");
+        sBtn.classList.remove("active");
       }
     }
 
-    function updatePlaceholders() {
-      const agent = document.getElementById("agentNameInput").value.trim() || "[Agent Name]";
+    function toggleStatus(cardId, clickedStatus) {
+      const card = document.getElementById(cardId);
+      const currentStatus = card.dataset.status;
+      forcedClosureState = false;
+
+      const newStatus = currentStatus === clickedStatus ? "" : clickedStatus;
+      card.dataset.status = newStatus;
+
+      card.classList.remove("status-q", "status-nq");
+      card.querySelector(".btn-q").classList.remove("selected");
+      card.querySelector(".btn-nq").classList.remove("selected");
+
+      const outroSlot = card.querySelector(".inline-outro-slot");
+      outroSlot.innerHTML = "";
+
+      if (newStatus === "q") {
+        card.classList.add("status-q");
+        card.querySelector(".btn-q").classList.add("selected");
+      } else if (newStatus === "nq") {
+        card.classList.add("status-nq");
+        card.querySelector(".btn-nq").classList.add("selected");
+        outroSlot.innerHTML = INLINE_OUTRO_HTML;
+      }
+
+      updateProgressAndClosure();
+    }
+
+    function updateProgressAndClosure() {
+      let qCount = 0;
+      let nqCount = 0;
+
+      QUESTION_IDS.forEach(id => {
+        const st = document.getElementById(id).dataset.status;
+        if (st === "q") qCount++;
+        if (st === "nq") nqCount++;
+      });
+
+      const pill = document.getElementById("progressPill");
+      const placeholder = document.getElementById("closurePlaceholder");
+      const closureBox = document.getElementById("closureBox");
+
+      pill.classList.remove("all-q", "has-nq");
+      if (nqCount > 0) {
+        pill.textContent = `NQ (${nqCount})`;
+        pill.classList.add("has-nq");
+      } else if (qCount === 8) {
+        pill.textContent = "8/8 Q";
+        pill.classList.add("all-q");
+      } else {
+        pill.textContent = `${qCount}/8`;
+      }
+
+      if ((qCount === 8 && nqCount === 0) || forcedClosureState) {
+        placeholder.classList.add("hidden");
+        closureBox.classList.remove("hidden");
+        if (qCount === 8) {
+          closureBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      } else {
+        closureBox.classList.add("hidden");
+        placeholder.classList.remove("hidden");
+      }
+    }
+
+    function forceClosure(show) {
+      forcedClosureState = show;
+      updateProgressAndClosure();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const btn = document.getElementById("themeToggleBtn");
+      const isDark = html.getAttribute("data-theme") === "dark";
+
+      if (isDark) {
+        html.setAttribute("data-theme", "light");
+        btn.textContent = "🌙 Dark";
+        localStorage.setItem("forge_theme", "light");
+      } else {
+        html.setAttribute("data-theme", "dark");
+        btn.textContent = "☀️ Light";
+        localStorage.setItem("forge_theme", "dark");
+      }
+    }
+
+    function updatePlaceholders(saveAgent = false) {
+      const agentInput = document.getElementById("agentNameInput").value.trim();
+      if (saveAgent) {
+        localStorage.setItem("ssdi_agent_name", agentInput);
+      }
+
+      const agent = agentInput || "[Agent Name]";
       const cx = document.getElementById("cxNameInput").value.trim() || "[CX Name]";
 
       document.querySelectorAll(".agent-name").forEach(el => el.textContent = agent);
@@ -1002,13 +1410,19 @@
 
     function resetCall() {
       document.getElementById("cxNameInput").value = "";
-      updatePlaceholders();
+      updatePlaceholders(false);
 
-      document.querySelectorAll(".script-card").forEach(card => {
+      QUESTION_IDS.forEach(id => {
+        const card = document.getElementById(id);
+        card.dataset.status = "";
         card.classList.remove("status-q", "status-nq");
-        card.querySelectorAll(".btn-q, .btn-nq").forEach(b => b.classList.remove("selected"));
+        card.querySelector(".btn-q").classList.remove("selected");
+        card.querySelector(".btn-nq").classList.remove("selected");
+        card.querySelector(".inline-outro-slot").innerHTML = "";
       });
 
+      forcedClosureState = false;
+      updateProgressAndClosure();
       closeRebuttal();
       document.getElementById("searchInput").value = "";
       renderObjections();
@@ -1019,11 +1433,20 @@
       if (e.key === "Escape") closeRebuttal();
     });
 
-    // Initial render
+    const savedAgent = localStorage.getItem("ssdi_agent_name");
+    if (savedAgent) {
+      document.getElementById("agentNameInput").value = savedAgent;
+      updatePlaceholders(false);
+    }
+
+    const savedTheme = localStorage.getItem("forge_theme");
+    if (savedTheme === "light") {
+      document.documentElement.setAttribute("data-theme", "light");
+      document.getElementById("themeToggleBtn").textContent = "🌙 Dark";
+    }
+
     renderObjections();
+    updateProgressAndClosure();
   </script>
 </body>
 </html>
-
-
-
